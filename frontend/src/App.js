@@ -298,7 +298,7 @@ const App = () => {
   const burnPoolToken = async (a) => {
     let valueWei = window.web3.utils.toWei(a.toString());
     console.log(a);
-    await stockpooltokensc.methods
+    await stocksc.methods
       .approve(addresses.stockLiquidatorAddress, valueWei)
       .send({ from: account })
       .once("receipt", async (receipt) => {})
