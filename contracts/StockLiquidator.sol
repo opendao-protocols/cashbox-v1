@@ -618,12 +618,6 @@ contract StockLiquiditator is ERC20Detailed,ERC20Burnable,ERC20Mintable
         owner=newOwner;
     }
     
-    function updateStockTokenRate(uint256 newRate) public onlyOwner returns(uint256){
-        StocktoDAI_rate=newRate;
-        setUpdatedPoolRate();
-        return StocktoDAI_rate;
-    }
-    
     function StockTokenAddress() public view returns (address) {
         return address(StockToken);
     }

@@ -7,7 +7,7 @@ const Body = ({
   redeemStockToken,
   mintPoolToken,
   burnPoolToken,
-  updateStockTokenRate,
+  updateDAIValuationCap,
   changeOwner,
   pooltokenTotalSupply,
   contractDaIBalance,
@@ -62,8 +62,8 @@ const Body = ({
     redeemStockToken(sellstockvalue.toString());
   };
 
-  const onsubmitupdateStockTokenRate = () => {
-    updateStockTokenRate(updatestockprice.toString());
+  const onsubmitupdateDAIValuationCap = () => {
+    updateDAIValuationCap(updatestockprice.toString());
   };
 
   const onchangeurll = (e) => {

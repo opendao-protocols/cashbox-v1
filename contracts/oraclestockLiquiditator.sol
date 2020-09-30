@@ -564,10 +564,10 @@ contract stockLiquiditator is  usingProvable
         DAIToken = ERC20(DAITokenAddr);
         PoolToken = ERC20(StockPoolTokenAddr);
         StockToken = ERC20(StockTokenAddr);
-        updateStockTokenRate(); //initial updation of stock to DAI Rate
+        updateDAIValuationCap(); //initial updation of stock to DAI Rate
     }
     
-    function updateStockTokenRate() public payable returns(bool){
+    function updateDAIValuationCap() public payable returns(bool){
         if (provable_getPrice("URL") > address(this).balance) {
             return false;
         } else {
@@ -625,7 +625,7 @@ contract stockLiquiditator is  usingProvable
           return inputDAI;  
         }
         else {
-            require(updateStockTokenRate(),"Update Rate Failure");
+            require(updateDAIValuationCap(),"Update Rate Failure");
             uint256 netTotalDAI=contractDAIValuation().add(inputDAI);
             uint256 a=(inputDAI.mul(multiplier)).div(netTotalDAI);
             return ( (a.mul(poolTokenTotalSupply())).div(multiplier-a) );
@@ -633,7 +633,7 @@ contract stockLiquiditator is  usingProvable
     }
     
     function redeemableDai(uint256 inputPoolToken) internal  returns (uint256 redeemableDaiAmount) {
-        require(updateStockTokenRate(),"Update Rate Failure");
+        require(updateDAIValuationCap(),"Update Rate Failure");
         uint256 poolTokenRatio=( (inputPoolToken.mul(multiplier)).div(poolTokenTotalSupply()) );
         return (contractDAIValuation().mul(poolTokenRatio)).div(multiplier);
     }
@@ -688,7 +688,7 @@ contract stockLiquiditator is  usingProvable
         require(burnallowance>=tokenAmount,"Insufficient Burn Allowance");
         ERC20Burnable(address(StockTokenAddress())).burnFrom(sender, tokenAmount);
         
-        require(updateStockTokenRate(),"Update Rate Failure");
+        require(updateDAIValuationCap(),"Update Rate Failure");
         
         uint256 outputDAIAmount=(tokenAmount.mul(StocktoDAI_rate)).div(10**18);// calculate dai amount to be return
         DAIToken.transfer(sender,outputDAIAmount);

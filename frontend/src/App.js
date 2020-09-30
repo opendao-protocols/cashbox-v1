@@ -3,9 +3,7 @@ import Web3 from "web3";
 import Navbar from "./Navbar";
 // const EthereumTx = require("ethereumjs-tx").Transaction;
 import Body from "./Body";
-import addresses from "./contracts/addresses.json";
-import ERC20 from "./contracts/Token.json";
-import oldSLDaiCapABI from "./contracts/oldSLDaiCapABI.json";
+import ContractDetails from "./contracts/ContractDetails.json";
 import ContractDeployment from "./ContractDeployment";
 import Admin from "./Admin";
 import {
@@ -78,24 +76,24 @@ const App = () => {
     const networkId = await web3.eth.net.getId();
 
     if (networkId === 42) {
-      const contract = new web3.eth.Contract(oldSLDaiCapABI.abi);
+      const contract = new web3.eth.Contract(ContractDetails.stockLiquidatorABI);
       setContract(contract);
 
       const Stock = new web3.eth.Contract(
-        oldSLDaiCapABI.abi,
-        addresses.stockLiquidatorAddress
+        ContractDetails.stockLiquidatorABI,
+        ContractDetails.stockLiquidatorAddress
       );
 
-      const daitoken = new web3.eth.Contract(ERC20.abi, addresses.daiAddress);
+      const daitoken = new web3.eth.Contract(ContractDetails.ERC20ABI, ContractDetails.daiAddress);
       setdaisc(daitoken);
       const stocktoken = new web3.eth.Contract(
-        ERC20.abi,
-        addresses.stockTokenAddress
+        ContractDetails.ERC20ABI,
+        ContractDetails.stockTokenAddress
       );
       setstocktokensc(stocktoken);
       // const stockpooltoken = new web3.eth.Contract(
-      //   ERC20.abi,
-      //   addresses.stockPoolTokenAddress
+      //   ContractDetails.ERC20ABI,
+      //   ContractDetails.stockPoolTokenAddress
       // );
       // setstockpooltokensc(stockpooltoken);
       setstocksc(Stock);
@@ -215,7 +213,7 @@ const App = () => {
     URl
   ) => {
     const web3 = window.web3;
-    let bytecode = addresses.bytecode;
+    let bytecode = ContractDetails.bytecode;
 
     const uppercapinwei = window.web3.utils.toWei(UppercapLimit.toString());
     console.log(uppercapinwei);
@@ -253,7 +251,7 @@ const App = () => {
   const redeemStockToken = async (a) => {
     let valueWei = window.web3.utils.toWei(a.toString());
     await stocktokensc.methods
-      .approve(addresses.stockLiquidatorAddress, valueWei)
+      .approve(ContractDetails.stockLiquidatorAddress, valueWei)
       .send({ from: account })
       .once("receipt", async (receipt) => {
         setLoading(false);
@@ -277,7 +275,7 @@ const App = () => {
   const mintPoolToken = async (a) => {
     let valueWei = window.web3.utils.toWei(a.toString());
     await daisc.methods
-      .approve(addresses.stockLiquidatorAddress, valueWei)
+      .approve(ContractDetails.stockLiquidatorAddress, valueWei)
       .send({ from: account })
       .once("receipt", async (receipt) => {})
       .on("error", (error) => {
@@ -299,7 +297,7 @@ const App = () => {
     let valueWei = window.web3.utils.toWei(a.toString());
     console.log(a);
     await stocksc.methods
-      .approve(addresses.stockLiquidatorAddress, valueWei)
+      .approve(ContractDetails.stockLiquidatorAddress, valueWei)
       .send({ from: account })
       .once("receipt", async (receipt) => {})
       .on("error", (error) => {
@@ -318,10 +316,10 @@ const App = () => {
       });
   };
 
-  const updateStockTokenRate = async (a) => {
+  const updateDAIValuationCap = async (a) => {
     let valueWei = window.web3.utils.toWei(a.toString());
     await stocksc.methods
-      .updateStockTokenRate(valueWei)
+      .updateDAIValuationCap(valueWei)
       .send({ from: account })
       .once("receipt", async (receipt) => {
         setLoading(false);
@@ -386,7 +384,7 @@ const App = () => {
                     redeemStockToken={redeemStockToken}
                     mintPoolToken={mintPoolToken}
                     burnPoolToken={burnPoolToken}
-                    updateStockTokenRate={updateStockTokenRate}
+                    updateDAIValuationCap={updateDAIValuationCap}
                     changeOwner={changeOwner}
                     pooltokenTotalSupply={pooltokenTotalSupply}
                     contractDaIBalance={contractDaIBalance}
@@ -413,7 +411,7 @@ const App = () => {
                     redeemStockToken={redeemStockToken}
                     mintPoolToken={mintPoolToken}
                     burnPoolToken={burnPoolToken}
-                    updateStockTokenRate={updateStockTokenRate}
+                    updateDAIValuationCap={updateDAIValuationCap}
                     changeOwner={changeOwner}
                     pooltokenTotalSupply={pooltokenTotalSupply}
                     contractDaIBalance={contractDaIBalance}
@@ -439,7 +437,7 @@ const App = () => {
                     redeemStockToken={redeemStockToken}
                     mintPoolToken={mintPoolToken}
                     burnPoolToken={burnPoolToken}
-                    updateStockTokenRate={updateStockTokenRate}
+                    updateDAIValuationCap={updateDAIValuationCap}
                     changeOwner={changeOwner}
                     pooltokenTotalSupply={pooltokenTotalSupply}
                     contractDaIBalance={contractDaIBalance}

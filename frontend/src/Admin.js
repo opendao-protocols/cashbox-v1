@@ -5,7 +5,7 @@ const Admin = ({
   redeemStockToken,
   mintPoolToken,
   burnPoolToken,
-  updateStockTokenRate,
+  updateDAIValuationCap,
   changeOwner,
   pooltokenTotalSupply,
   contractDaIBalance,
@@ -60,8 +60,8 @@ const Admin = ({
     redeemStockToken(sellstockvalue.toString());
   };
 
-  const onsubmitupdateStockTokenRate = () => {
-    updateStockTokenRate(updatestockprice.toString());
+  const onsubmitupdateDAIValuationCap = () => {
+    updateDAIValuationCap(updatestockprice.toString());
   };
 
   const onchangeurll = (e) => {
@@ -119,8 +119,8 @@ const Admin = ({
             </div>
             <span style={{ paddingLeft: "20px" }}></span>
 
-            <button class="btn btn-main" onClick={onsubmitupdateStockTokenRate}>
-              Update stock price
+            <button class="btn btn-main" onClick={onsubmitupdateDAIValuationCap}>
+              Update DAI Valuation Cap
             </button>
           </div>
           <br></br>
