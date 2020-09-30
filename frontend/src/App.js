@@ -361,7 +361,7 @@ const App = () => {
   if (loading === true) {
     content = (
       <p className="text-center">
-        Loading...{loading2 ? <div>load on mainenet </div> : ""}
+        Loading...{loading2 ? <div>load on mainnet </div> : ""}
       </p>
     );
   } else {

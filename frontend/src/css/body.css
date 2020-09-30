@@ -1,3 +1,27 @@
+@font-face{
+    font-family: SF Compact Display;
+    src: url('../fonts/SF-Compact-Display-Regular.ttf');
+}
+@font-face{
+    font-family: SF Compact Display Medium;
+    src: url('../fonts/SFCompactDisplay-Medium.ttf');
+}
+@font-face{
+    font-family: SF Pro Display;
+    src: url('../fonts/SFProDisplay-Bold.ttf');
+}
+
+body {
+  background-color: #000000 !important;
+  color: #fff !important;
+  font-family: SF Compact Display, Roboto, "Helvetica Neue", sans-serif !important;
+  line-height: 1.3 !important;
+}
+
+.label {
+  font-weight: 700;
+}
+
 #a {
   position: absolute;
   width: 182px;

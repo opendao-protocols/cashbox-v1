@@ -1,0 +1,46 @@
+$primary: #FA596B;
+
+.btn{
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 1px;
+  font-size: 1rem;
+  &.btn-main {
+		background: $primary !important;
+		border-radius: 6px;
+		cursor: pointer !important;
+		color: white;
+		width: 300px;
+		font-size: 0.85em;
+	}
+}
+
+.navbar {
+	padding: 2.5rem 2rem !important;
+}
+
+.btn:hover {
+	box-shadow: 0 4px 30px hsla(0,0%,70.2%,.25);
+	color: white !important;
+	font-weight: bold;
+}
+
+.link {
+  color: #FF8686;
+}
+.link:hover {
+  text-decoration: underline;
+  color: #e67979;
+}
+
+.btn-grey-box {
+  background: #363333 !important;
+  border-radius: 5px;
+  color: #E4E5E8 !important;
+  line-height: 141.44%;
+  box-shadow: none;
+  font-weight: 500 !important;
+  font-size: 12px !important;
+  letter-spacing: 0px !important;
+  margin-right: 2em !important;
+}

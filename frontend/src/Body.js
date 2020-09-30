@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./css/body.css";
+import "./css/index.scss";
+
 
 const Body = ({
   redeemStockToken,
@@ -76,193 +78,192 @@ const Body = ({
   };
   return (
     <div className="container">
-      <div class="row">
-        <div>
-          <p>cash box content</p>
-          <div class="row">
-            <span>{contractDaIBalance} Dai</span>
-            <span style={{ paddingLeft: "40px" }}>
-              {contractstockTokenBalance} stock
-            </span>
-          </div>
-        </div>
+    <div class="row">
+
+        <div class="col-md-6">
 
         <div>
-          <p style={{ "padding-left": "100px" }}>Total supply of Pool Tokens</p>
-          <div class="row">
-            <span style={{ paddingLeft: "150px" }}>
-              {pooltokenTotalSupply} token
-            </span>
+
+          <div className="row mt-md-5">
+            <div class="">
+              <input
+                id="inputvalue"
+                type="text"
+                
+                name="sellmintvalue"
+                value={sellmintvalue}
+                onChange={onchangemintvalue}
+                class="form-control"
+                required
+              />
+            </div>
+            <span style={{ paddingLeft: "20px" }}></span>
+
+            <button class="btn btn-main" onClick={onsubmitminttoken}>
+              Deposit DAI and get pool tokens
+            </button>
           </div>
+          <br></br>
+
+          <div className="row">
+            <div class="">
+              <input
+                id="inputvalue"
+                type="text"
+                
+                name="sellstockvalue"
+                value={sellstockvalue}
+                onChange={onchangestockvalue}
+                class="form-control"
+                required
+              />
+            </div>
+            <span style={{ paddingLeft: "20px" }}></span>
+
+            <button class="btn btn-main" onClick={onsubmitsellstock}>
+              Sell Asset tokens to get DAI
+            </button>
+          </div>
+          <br></br>
+
+          <div className="row">
+          <div class="">
+            <input
+              id="inputvalue"
+              type="text"
+              
+              name="sellredeemvalue"
+              value={sellredeemvalue}
+              onChange={onchangeredeemvalue}
+              class="form-control"
+              required
+            />
+            </div>
+            <span style={{ paddingLeft: "20px" }}></span>
+            <button class="btn btn-main" onClick={onsubmitredeemtoken}>
+              Redeem Pool tokens for Asset tokens
+            </button>
+          </div>
+          <br></br><br></br>
         </div>
-        <div>
-          <p style={{ "padding-left": "100px" }}>STOCK price</p>
-          <div class="row">
-            <span style={{ paddingLeft: "100px" }}>
-              1 stock = {stocktodai} dai
-            </span>
-          </div>
-        </div>
-        <div>
-          <p style={{ "padding-left": "100px" }}>pool take</p>
-          <div class="row">
-            <span style={{ paddingLeft: "100px" }}>
-              1 pool ={" "}
-              {/* {Number(contractDaIValuation / pooltokenTotalSupply).toFixed(
-                2
-              ) !== null
-                ? 0
-                : Number(contractDaIValuation / pooltokenTotalSupply).toFixed(
-                    2
-                  )} */}
-              {Number(contractDaIValuation / pooltokenTotalSupply).toFixed(2)}
-              dai
-            </span>
-          </div>
-        </div>
-        <div className="row" style={{ paddingTop: "50px" }}>
-          <div>
-            <p>your stock</p>
-            <div class="row">
-              <span style={{ paddingLeft: "20px" }}>
-                {mystockbalance} stock
-              </span>
-            </div>
-          </div>
-          <div>
-            <p style={{ "padding-left": "100px" }}>your pool token</p>
-            <div class="row">
-              <span style={{ paddingLeft: "120px" }}>
-                {mypoolbalance} token
-              </span>
-            </div>
-          </div>
-          <div>
-            <p style={{ "padding-left": "100px" }}>balance of dai</p>
-            <div class="row">
-              <span style={{ paddingLeft: "120px" }}>{mydaibalance} dai</span>
-            </div>
-          </div>
-          <div>
-            <p style={{ "padding-left": "100px" }}>daiValauationCap</p>
-            <div class="row">
-              <span style={{ paddingLeft: "120px" }}>{ddaiValauationCap} </span>
-            </div>
-          </div>
-          <div>
-            <p style={{ "padding-left": "100px" }}>URL</p>
-            <div class="row">
-              <span style={{ paddingLeft: "120px" }}>
-                <a href={urlll} target="_blank">
-                  {urlll}
-                </a>
-              </span>
-            </div>
-          </div>
-        </div>
+
+
       </div>
 
-      <div style={{ paddingTop: "150px" }}>
-        <div className="row">
-          <input
-            id="inputvalue"
-            type="text"
-            placeholder="value"
-            name="sellstockvalue"
-            value={sellstockvalue}
-            onChange={onchangestockvalue}
-            required
-          />
-          <span style={{ paddingLeft: "20px" }}></span>
+        <div class="col-md-6 text-left"> 
 
-          <button class="btn-primary" onClick={onsubmitsellstock}>
-            sell stock
-          </button>
+        <div class="row">
+          <div class="col-md-6">
+            <p class="label">Cash box content:</p>
+          </div>
+          <div class="col-md-6">
+            <span>{contractDaIBalance} DAI</span>
+          </div>
         </div>
-        {/* <br></br>
-        <div className="row">
-          <input
-            id="inputvalue"
-            type="text"
-            placeholder="set url"
-            name="urll"
-            value={urll}
-            onChange={onchangeurll}
-            required
-          />
-          <span style={{ paddingLeft: "20px" }}></span>
 
-          <button class="btn-primary" onClick={onsubmitupdateurl}>
-            update url
-          </button>
-        </div> */}
-        {/* <br></br>
-        <div className="row">
-          <input
-            id="inputvalue"
-            type="text"
-            placeholder="value"
-            name="owner"
-            value={owner}
-            onChange={onchangeowner}
-            required
-          />
-          <span style={{ paddingLeft: "20px" }}></span>
-
-          <button class="btn-primary" onClick={onsubmitchangeowner}>
-            Change owner
-          </button>
-        </div> */}
-        {/* <br></br>
-        <div className="row">
-          <input
-            id="inputvalue"
-            type="text"
-            placeholder="value"
-            name="updatestockprice"
-            value={updatestockprice}
-            onChange={onupdatestockprice}
-            required
-          />
-          <span style={{ paddingLeft: "20px" }}></span>
-
-          <button class="btn-primary" onClick={onsubmitupdateStockTokenRate}>
-            update stock price
-          </button>
-        </div> */}
-        <br></br>
-        <div className="row">
-          <input
-            id="inputvalue"
-            type="text"
-            placeholder="value"
-            name="sellmintvalue"
-            value={sellmintvalue}
-            onChange={onchangemintvalue}
-            required
-          />
-          <span style={{ paddingLeft: "20px" }}></span>
-
-          <button class="btn-primary" onClick={onsubmitminttoken}>
-            mint pool tokens
-          </button>
+        <div class="row">
+          <div class="col-md-6">
+            <p class="label">No. of stocks:</p>
+          </div>
+          <div class="col-md-6">
+            <span>{contractstockTokenBalance} stock</span>
+          </div>
         </div>
-        <br></br>
-        <div className="row">
-          <input
-            id="inputvalue"
-            type="text"
-            placeholder="value"
-            name="sellredeemvalue"
-            value={sellredeemvalue}
-            onChange={onchangeredeemvalue}
-            required
-          />
-          <span style={{ paddingLeft: "20px" }}></span>
-          <button class="btn-primary" onClick={onsubmitredeemtoken}>
-            redeem pool tokens
-          </button>
+
+        <div class="row">
+          <div class="col-md-6">
+            <p class="label">Total supply of Pool Tokens:</p>
+          </div>
+          <div class="col-md-6">
+            <span>{pooltokenTotalSupply} token</span>
+          </div>
         </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <p class="label">Stock price:</p>
+          </div>
+          <div class="col-md-6">
+            <span>1 stock = {stocktodai} DAI</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <p class="label">Pool token price:</p>
+          </div>
+          <div class="col-md-6">
+            <span>
+              1 pool ={" "}
+              {Number(contractDaIValuation / pooltokenTotalSupply).toFixed(2)}{" "}
+              DAI
+            </span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <p class="label">Your stock</p>
+          </div>
+          <div class="col-md-6">
+            <span>{mystockbalance} stock</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <p class="label">Your pool token</p>
+          </div>
+          <div class="col-md-6">
+            <span>{mypoolbalance} token</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <p class="label">Balance of DAI:</p>
+          </div>
+          <div class="col-md-6">
+            <span>{mydaibalance} DAI</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <p class="label">DAI Valuation Cap:</p>
+          </div>
+          <div class="col-md-6">
+            <span>{ddaiValauationCap}</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <p class="label">Pool Market Cap:</p>
+          </div>
+          <div class="col-md-6">
+            <span>{Number(pooltokenTotalSupply * (contractDaIValuation / pooltokenTotalSupply)).toFixed(2)}</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <p class="label">URL:</p>
+          </div>
+          <div class="col-md-6">
+            <span>
+              <a href={urlll} target="_blank" class="link">
+                  {urlll}
+              </a>
+            </span>
+          </div>
+        </div>
+
+        <br></br><br></br>
+
+          
+        </div>
+
       </div>
     </div>
   );

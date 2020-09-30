@@ -55,139 +55,137 @@ const ContractDeployment = ({ onsubmitdetails }) => {
   };
   return (
     <div class="container">
-      <form onSubmit={onsubmitdet}>
-        {/* <div className="row">
-      <input
-        id="inputvalue"
-        type="text"
-        className="form-control"
-        placeholder="stock Pool TokenAddress"
-        name="stockPoolTokenAddress"
-        value={stockPoolTokenAddress}
-        onChange={onchangestockPoolTokenAddress}
-        required
-      />
-      <span style={{ paddingLeft: "20px" }}></span>
-
-     <button class="btn-primary" disabled>
-        input token address
-      </button> 
-    </div> */}
-        <div className="row">
-          <input
-            id="inputvalue"
-            type="text"
-            placeholder="dai address"
-            name="daiaddress"
-            className="form-control"
-            value={daiaddress}
-            onChange={onchangedaiaddress}
-            required
-          />
-          <span style={{ paddingLeft: "20px" }}></span>
-
-          {/* <button class="btn-primary" disabled>
-        input stock address
-      </button> */}
-        </div>
-        <br />
-        <div className="row">
-          <input
-            id="inputvalue"
-            type="text"
-            placeholder="stock Token Address"
-            name="stockTokenAddress"
-            className="form-control"
-            value={stockTokenAddress}
-            onChange={onchangestockTokenAddress}
-            required
-          />
-          <span style={{ paddingLeft: "20px" }}></span>
-
-          {/* <button class="btn-primary" disabled>
-        input stock address
-      </button> */}
-        </div>
-
-        <br />
-        <div className="row">
-          <input
-            id="inputvalue"
-            type="text"
-            className="form-control"
-            placeholder="upper cap limit"
-            name="UppercapLimit"
-            value={UppercapLimit}
-            onChange={onchangeUppercapLimit}
-            required
-          />
-          <span style={{ paddingLeft: "20px" }}></span>
-          {/* <label class="btn-primary" disabled>
-        input upper cap limit
-      </label> */}
-        </div>
-        <br />
-        <div className="row">
-          <input
-            id="inputvalue"
-            type="text"
-            placeholder="token name"
-            name="tokenname"
-            className="form-control"
-            value={tokenname}
-            onChange={onchangetokenname}
-            required
-          />
-          <span style={{ paddingLeft: "20px" }}></span>
-
-          {/* <button class="btn-primary" disabled>
-        input stock address
-      </button> */}
-        </div>
-        <br />
-        <div className="row">
-          <input
-            id="inputvalue"
-            type="text"
-            placeholder="token symbol"
-            name="tokensymbol"
-            className="form-control"
-            value={tokensybol}
-            onChange={onchangetokensymbol}
-            required
-          />
-          <span style={{ paddingLeft: "20px" }}></span>
-
-          {/* <button class="btn-primary" disabled>
-        input stock address
-      </button> */}
-        </div>
-
-        <br />
-        <div className="row">
-          <input
-            id="inputvalue"
-            type="text"
-            placeholder="enter URL"
-            name="URL"
-            className="form-control"
-            value={URL}
-            onChange={onchangeURL}
-            required
-          />
-          <span style={{ paddingLeft: "20px" }}></span>
-
-          {/* <button class="btn-primary" disabled>
-        input stock address
-      </button> */}
-        </div>
-        <br></br>
-        <div style={{ position: "absolute", left: "43%" }}>
-          <button type="submit" class="btn-primary">
+      <div class="row">
+        <div class="col-md-6 offset-md-3">
+         <form onSubmit={onsubmitdet}>
+            {/* 
+            <div className="row">
+               <input
+                  id="inputvalue"
+                  type="text"
+                  className="form-control"
+                  placeholder="stock Pool TokenAddress"
+                  name="stockPoolTokenAddress"
+                  value={stockPoolTokenAddress}
+                  onChange={onchangestockPoolTokenAddress}
+                  required
+                  />
+               <span style={{ paddingLeft: "20px" }}></span>
+               <button class="btn-main" disabled>
+               input token address
+               </button> 
+            </div>
+            */}
+            <div className="row">
+               <input
+                  id="inputvalue"
+                  type="text"
+                  placeholder="DAI address"
+                  name="daiaddress"
+                  className="form-control"
+                  value={daiaddress}
+                  onChange={onchangedaiaddress}
+                  required
+                  />
+               <span style={{ paddingLeft: "20px" }}></span>
+               {/* <button class="btn-main" disabled>
+               input stock address
+               </button> */}
+            </div>
+            <br />
+            <div className="row">
+               <input
+                  id="inputvalue"
+                  type="text"
+                  placeholder="Stock Token Address"
+                  name="stockTokenAddress"
+                  className="form-control"
+                  value={stockTokenAddress}
+                  onChange={onchangestockTokenAddress}
+                  required
+                  />
+               <span style={{ paddingLeft: "20px" }}></span>
+               {/* <button class="btn-main" disabled>
+               input stock address
+               </button> */}
+            </div>
+            <br />
+            <div className="row">
+               <input
+                  id="inputvalue"
+                  type="text"
+                  className="form-control"
+                  placeholder="Upper cap limit"
+                  name="UppercapLimit"
+                  value={UppercapLimit}
+                  onChange={onchangeUppercapLimit}
+                  required
+                  />
+               <span style={{ paddingLeft: "20px" }}></span>
+               {/* <label class="btn-main" disabled>
+               input upper cap limit
+               </label> */}
+            </div>
+            <br />
+            <div className="row">
+               <input
+                  id="inputvalue"
+                  type="text"
+                  placeholder="Token name"
+                  name="tokenname"
+                  className="form-control"
+                  value={tokenname}
+                  onChange={onchangetokenname}
+                  required
+                  />
+               <span style={{ paddingLeft: "20px" }}></span>
+               {/* <button class="btn-main" disabled>
+               input stock address
+               </button> */}
+            </div>
+            <br />
+            <div className="row">
+               <input
+                  id="inputvalue"
+                  type="text"
+                  placeholder="Token symbol"
+                  name="tokensymbol"
+                  className="form-control"
+                  value={tokensybol}
+                  onChange={onchangetokensymbol}
+                  required
+                  />
+               <span style={{ paddingLeft: "20px" }}></span>
+               {/* <button class="btn-main" disabled>
+               input stock address
+               </button> */}
+            </div>
+            <br />
+            <div className="row">
+               <input
+                  id="inputvalue"
+                  type="text"
+                  placeholder="Enter URL"
+                  name="URL"
+                  className="form-control"
+                  value={URL}
+                  onChange={onchangeURL}
+                  required
+                  />
+               <span style={{ paddingLeft: "20px" }}></span>
+               {/* <button class="btn-main" disabled>
+               input stock address
+               </button> */}
+            </div>
+            <br></br><br></br>
+            <div class="row text-center">
+            <button type="submit" class="btn btn-main mx-auto">
             Deploy
-          </button>
+            </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 };
