@@ -80,12 +80,12 @@ const Body = ({
     <div className="container">
     <div class="row">
 
-        <div class="col-md-6">
+        <div class="col-md-8 offset-md-2 text-center">
 
         <div>
 
-          <div className="row mt-md-5">
-            <div class="">
+          <div className="row mt-md-3">
+            <div class="col-md-6">
               <input
                 id="inputvalue"
                 type="text"
@@ -97,16 +97,16 @@ const Body = ({
                 required
               />
             </div>
-            <span style={{ paddingLeft: "20px" }}></span>
-
-            <button class="btn btn-main" onClick={onsubmitminttoken}>
-              Deposit DAI and get pool tokens
-            </button>
+            <div class="col-md-6">
+              <button class="btn btn-main btn-block" onClick={onsubmitminttoken}>
+                Deposit DAI and get CashBox tokens
+              </button>
+            </div>
           </div>
           <br></br>
 
           <div className="row">
-            <div class="">
+            <div class="col-md-6">
               <input
                 id="inputvalue"
                 type="text"
@@ -118,16 +118,16 @@ const Body = ({
                 required
               />
             </div>
-            <span style={{ paddingLeft: "20px" }}></span>
-
-            <button class="btn btn-main" onClick={onsubmitsellstock}>
-              Sell Asset tokens to get DAI
-            </button>
+            <div class="col-md-6">
+              <button class="btn btn-main btn-block" onClick={onsubmitsellstock}>
+                Sell Asset tokens to get DAI
+              </button>
+            </div>
           </div>
           <br></br>
 
           <div className="row">
-          <div class="">
+          <div class="col-md-6">
             <input
               id="inputvalue"
               type="text"
@@ -139,10 +139,11 @@ const Body = ({
               required
             />
             </div>
-            <span style={{ paddingLeft: "20px" }}></span>
-            <button class="btn btn-main" onClick={onsubmitredeemtoken}>
-              Redeem Pool tokens for Asset tokens
-            </button>
+            <div class="col-md-6">
+              <button class="btn btn-main btn-block" onClick={onsubmitredeemtoken}>
+                Redeem CashBox tokens for Asset tokens
+              </button>
+            </div>
           </div>
           <br></br><br></br>
         </div>
@@ -150,121 +151,123 @@ const Body = ({
 
       </div>
 
-        <div class="col-md-6 text-left"> 
 
-        <div class="row">
-          <div class="col-md-6">
-            <p class="label">Cash box content:</p>
-          </div>
-          <div class="col-md-6">
-            <span>{contractDaIBalance} DAI</span>
-          </div>
-        </div>
 
-        <div class="row">
-          <div class="col-md-6">
-            <p class="label">No. of stocks:</p>
-          </div>
-          <div class="col-md-6">
-            <span>{contractstockTokenBalance} stock</span>
-          </div>
-        </div>
+      </div>
 
-        <div class="row">
-          <div class="col-md-6">
-            <p class="label">Total supply of Pool Tokens:</p>
-          </div>
-          <div class="col-md-6">
-            <span>{pooltokenTotalSupply} token</span>
-          </div>
-        </div>
+      <br></br><br></br>
 
-        <div class="row">
-          <div class="col-md-6">
-            <p class="label">Stock price:</p>
-          </div>
-          <div class="col-md-6">
-            <span>1 stock = {stocktodai} DAI</span>
-          </div>
-        </div>
+      <div class="row">
 
-        <div class="row">
+        <div class="col-md-12">
+          <div class="row">
           <div class="col-md-6">
-            <p class="label">Pool token price:</p>
+            <div class="row">
+              <div class="col-md-10 offset-md-1 section">
+                <h3 class="section-heading">STATISTICS</h3>
+                  <table class="table text-left width-lg">
+                    <tbody>
+                      <tr>
+                        <td>DAI in Cashbox:</td>
+                        <td>{contractDaIBalance}</td>
+                      </tr>
+                      <tr>
+                        <td>Asset tokens in CashBox:</td>
+                        <td>{contractstockTokenBalance}</td>
+                      </tr>
+                      <tr>
+                        <td>Total CashBox tokens in circulation:</td>
+                        <td>{pooltokenTotalSupply}</td>
+                      </tr>
+                      <tr>
+                        <td>Asset token price in DAI:</td>
+                        <td>{stocktodai}</td>
+                      </tr>
+                      <tr>
+                        <td>CashBox token price in DAI:</td>
+                        <td>{Number(contractDaIValuation / pooltokenTotalSupply).toFixed(2)}</td>
+                      </tr>
+                      <tr>
+                        <td>CashBox market cap ceiling:</td>
+                        <td>{ddaiValauationCap}</td>
+                      </tr>
+                      <tr>
+                        <td>CashBox current market cap:</td>
+                        <td>{Number(pooltokenTotalSupply * (contractDaIValuation / pooltokenTotalSupply)).toFixed(2)}</td>
+                      </tr>
+                      <tr>
+                        <td>URL:</td>
+                        <td>
+                        <span>
+                          <a href={urlll} target="_blank" class="link">
+                              {urlll}
+                          </a>
+                        </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+              </div>
+            </div>
           </div>
-          <div class="col-md-6">
-            <span>
-              1 pool ={" "}
-              {Number(contractDaIValuation / pooltokenTotalSupply).toFixed(2)}{" "}
-              DAI
-            </span>
-          </div>
-        </div>
 
-        <div class="row">
           <div class="col-md-6">
-            <p class="label">Your stock</p>
-          </div>
-          <div class="col-md-6">
-            <span>{mystockbalance} stock</span>
-          </div>
-        </div>
+            <div class="row">
+              <div class="col-md-10 offset-md-1 section">
+                <h3 class="section-heading">YOUR BALANCES</h3>
+                <table class="table text-left width-lg">
+                  <tbody>
+                    <tr>
+                      <td>Asset token in your wallet:</td>
+                      <td>{mystockbalance}</td>
+                    </tr>
+                    <tr>
+                      <td>CashBox token in your wallet:</td>
+                      <td>{mypoolbalance}</td>
+                    </tr>
+                    <tr>
+                      <td>DAI in your wallet:</td>
+                      <td>{mydaibalance}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-        <div class="row">
-          <div class="col-md-6">
-            <p class="label">Your pool token</p>
-          </div>
-          <div class="col-md-6">
-            <span>{mypoolbalance} token</span>
-          </div>
-        </div>
+            <br></br>
+            <br></br>
+            <br></br>
 
-        <div class="row">
-          <div class="col-md-6">
-            <p class="label">Balance of DAI:</p>
+            <div class="row">
+              <div class="col-md-10 offset-md-1 section">
+                <h3 class="section-heading">CONTRACT ADDRESSES</h3>
+                <table class="table text-left">
+                  <tbody>
+                    <tr>
+                      <td>DAI Address:</td>
+                      <td>0x6b175474e89094c44da98b954eedeac495271d0f</td>
+                    </tr>
+                    <tr>
+                      <td class="text-break">Pool Token Address: </td>
+                      <td>0x405594E2379f393F9A00ceF2f2f0A844Efcfd6eC</td>
+                    </tr>
+                    <tr>
+                      <td class="text-break">Asset Token Address:</td>
+                      <td>0x86361E8b7900D7E819A471d712eF25A9c05b5588</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-          <div class="col-md-6">
-            <span>{mydaibalance} DAI</span>
-          </div>
-        </div>
 
-        <div class="row">
-          <div class="col-md-6">
-            <p class="label">DAI Valuation Cap:</p>
           </div>
-          <div class="col-md-6">
-            <span>{ddaiValauationCap}</span>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-6">
-            <p class="label">Pool Market Cap:</p>
-          </div>
-          <div class="col-md-6">
-            <span>{Number(pooltokenTotalSupply * (contractDaIValuation / pooltokenTotalSupply)).toFixed(2)}</span>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-6">
-            <p class="label">URL:</p>
-          </div>
-          <div class="col-md-6">
-            <span>
-              <a href={urlll} target="_blank" class="link">
-                  {urlll}
-              </a>
-            </span>
-          </div>
-        </div>
-
-        <br></br><br></br>
-
-          
         </div>
 
       </div>
+
+      <br></br><br></br> 
+
     </div>
   );
 };

@@ -20,15 +20,8 @@ const Navbar = (props) => {
         <div class="asset btn btn-grey-box">
               <span style={{ color: "#ff8686" }}>BETA</span>
            </div>
-      </a>
-        </li>
-        <a href="/deploy" style={{ color: "#ffffff" }}>
-          <li className="nav-item text-white">
-          <div class="asset btn btn-grey-box">            
-              <span>Deploy Smart Contracts</span>
-          </div>
-          </li>
         </a>
+        </li>
         <li className="nav-item text-white">
         <div class="asset btn btn-grey-box" style={{ cursor: "default", boxShadow: "none" }}>
               <span>{trucateAddress(props.account)}</span>
