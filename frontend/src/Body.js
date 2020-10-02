@@ -2,24 +2,23 @@ import React, { useState } from "react";
 import "./css/body.css";
 import "./css/index.scss";
 
-
 const Body = ({
   redeemStockToken,
   mintPoolToken,
   burnPoolToken,
-  updateDAIValuationCap,
+  updateCashValuationCap,
   changeOwner,
   pooltokenTotalSupply,
-  contractDaIBalance,
+  contractCashBalance,
   contractstockTokenBalance,
-  contractDaIValuation,
-  stocktodai,
-  mydaibalance,
+  contractCashValuation,
+  stocktocash,
+  mycashbalance,
   mypoolbalance,
   mystockbalance,
-  pooltodai,
+  pooltocash,
   updateurl,
-  ddaiValauationCap,
+  dcashValauationCap,
   urlll,
   data,
 }) => {
@@ -29,7 +28,7 @@ const Body = ({
   const [owner, setowner] = useState("");
   const [updatestockprice, setupdatestockprice] = useState("");
   const [urll, seturll] = useState("");
-  console.log(data);
+  // console.log(data);
   const onchangestockvalue = (e) => {
     setsellstockvalue(e.target.value);
   };
@@ -59,11 +58,12 @@ const Body = ({
   };
 
   const onsubmitsellstock = () => {
+    console.log(sellstockvalue.toString());
     redeemStockToken(sellstockvalue.toString());
   };
 
-  const onsubmitupdateDAIValuationCap = () => {
-    updateDAIValuationCap(updatestockprice.toString());
+  const onsubmitupdateCashValuationCap = () => {
+    updateCashValuationCap(updatestockprice.toString());
   };
 
   const onchangeurll = (e) => {
@@ -78,98 +78,97 @@ const Body = ({
   };
   return (
     <div className="container">
-    <div class="row">
-
+      <div class="row">
         <div class="col-md-8 offset-md-2 text-center">
-
-        <div>
-
-          <div className="row mt-md-3">
-            <div class="col-md-6">
-              <input
-                id="inputvalue"
-                type="text"
-                
-                name="sellmintvalue"
-                value={sellmintvalue}
-                onChange={onchangemintvalue}
-                class="form-control"
-                required
-              />
+          <div>
+            <div className="row mt-md-3">
+              <div class="col-md-6">
+                <input
+                  id="inputvalue"
+                  type="text"
+                  name="sellmintvalue"
+                  value={sellmintvalue}
+                  onChange={onchangemintvalue}
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <button
+                  class="btn btn-main btn-block"
+                  onClick={onsubmitminttoken}
+                >
+                  Deposit Cash and get CashBox tokens
+                </button>
+              </div>
             </div>
-            <div class="col-md-6">
-              <button class="btn btn-main btn-block" onClick={onsubmitminttoken}>
-                Deposit DAI and get CashBox tokens
-              </button>
+            <br></br>
+
+            <div className="row">
+              <div class="col-md-6">
+                <input
+                  id="inputvalue"
+                  type="text"
+                  name="sellstockvalue"
+                  value={sellstockvalue}
+                  onChange={onchangestockvalue}
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <button
+                  class="btn btn-main btn-block"
+                  onClick={onsubmitsellstock}
+                >
+                  Sell Asset tokens to get Cash
+                </button>
+              </div>
             </div>
+            <br></br>
+
+            <div className="row">
+              <div class="col-md-6">
+                <input
+                  id="inputvalue"
+                  type="text"
+                  name="sellredeemvalue"
+                  value={sellredeemvalue}
+                  onChange={onchangeredeemvalue}
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <button
+                  class="btn btn-main btn-block"
+                  onClick={onsubmitredeemtoken}
+                >
+                  Redeem CashBox tokens for Asset tokens
+                </button>
+              </div>
+            </div>
+            <br></br>
+            <br></br>
           </div>
-          <br></br>
-
-          <div className="row">
-            <div class="col-md-6">
-              <input
-                id="inputvalue"
-                type="text"
-                
-                name="sellstockvalue"
-                value={sellstockvalue}
-                onChange={onchangestockvalue}
-                class="form-control"
-                required
-              />
-            </div>
-            <div class="col-md-6">
-              <button class="btn btn-main btn-block" onClick={onsubmitsellstock}>
-                Sell Asset tokens to get DAI
-              </button>
-            </div>
-          </div>
-          <br></br>
-
-          <div className="row">
-          <div class="col-md-6">
-            <input
-              id="inputvalue"
-              type="text"
-              
-              name="sellredeemvalue"
-              value={sellredeemvalue}
-              onChange={onchangeredeemvalue}
-              class="form-control"
-              required
-            />
-            </div>
-            <div class="col-md-6">
-              <button class="btn btn-main btn-block" onClick={onsubmitredeemtoken}>
-                Redeem CashBox tokens for Asset tokens
-              </button>
-            </div>
-          </div>
-          <br></br><br></br>
         </div>
-
-
       </div>
 
-
-
-      </div>
-
-      <br></br><br></br>
+      <br></br>
+      <br></br>
 
       <div class="row">
-
         <div class="col-md-12">
           <div class="row">
-          <div class="col-md-6">
-            <div class="row">
-              <div class="col-md-10 offset-md-1 section">
-                <h3 class="section-heading">STATISTICS</h3>
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-md-10 offset-md-1 section">
+                  <h3 class="section-heading">STATISTICS</h3>
                   <table class="table text-left width-lg">
                     <tbody>
                       <tr>
-                        <td>DAI in Cashbox:</td>
-                        <td>{contractDaIBalance}</td>
+                        <td>Cash in Cashbox:</td>
+                        <td>{contractCashBalance}</td>
                       </tr>
                       <tr>
                         <td>Asset tokens in CashBox:</td>
@@ -180,94 +179,101 @@ const Body = ({
                         <td>{pooltokenTotalSupply}</td>
                       </tr>
                       <tr>
-                        <td>Asset token price in DAI:</td>
-                        <td>{stocktodai}</td>
+                        <td>Asset token price in Cash:</td>
+                        <td>{stocktocash}</td>
                       </tr>
                       <tr>
-                        <td>CashBox token price in DAI:</td>
-                        <td>{Number(contractDaIValuation / pooltokenTotalSupply).toFixed(2)}</td>
+                        <td>CashBox token price in Cash:</td>
+                        <td>
+                          {Number(
+                            contractCashValuation / pooltokenTotalSupply
+                          ).toFixed(2)}
+                        </td>
                       </tr>
                       <tr>
                         <td>CashBox market cap ceiling:</td>
-                        <td>{ddaiValauationCap}</td>
+                        <td>{dcashValauationCap}</td>
                       </tr>
                       <tr>
                         <td>CashBox current market cap:</td>
-                        <td>{Number(pooltokenTotalSupply * (contractDaIValuation / pooltokenTotalSupply)).toFixed(2)}</td>
+                        <td>
+                          {Number(
+                            pooltokenTotalSupply *
+                              (contractCashValuation / pooltokenTotalSupply)
+                          ).toFixed(2)}
+                        </td>
                       </tr>
                       <tr>
                         <td>URL:</td>
                         <td>
-                        <span>
-                          <a href={urlll} target="_blank" class="link">
+                          <span>
+                            <a href={urlll} target="_blank" class="link">
                               {urlll}
-                          </a>
-                        </span>
+                            </a>
+                          </span>
                         </td>
                       </tr>
                     </tbody>
                   </table>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-6">
-            <div class="row">
-              <div class="col-md-10 offset-md-1 section">
-                <h3 class="section-heading">YOUR BALANCES</h3>
-                <table class="table text-left width-lg">
-                  <tbody>
-                    <tr>
-                      <td>Asset token in your wallet:</td>
-                      <td>{mystockbalance}</td>
-                    </tr>
-                    <tr>
-                      <td>CashBox token in your wallet:</td>
-                      <td>{mypoolbalance}</td>
-                    </tr>
-                    <tr>
-                      <td>DAI in your wallet:</td>
-                      <td>{mydaibalance}</td>
-                    </tr>
-                  </tbody>
-                </table>
+                </div>
               </div>
             </div>
 
-            <br></br>
-            <br></br>
-            <br></br>
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-md-10 offset-md-1 section">
+                  <h3 class="section-heading">YOUR BALANCES</h3>
+                  <table class="table text-left width-lg">
+                    <tbody>
+                      <tr>
+                        <td>Asset token in your wallet:</td>
+                        <td>{mystockbalance}</td>
+                      </tr>
+                      <tr>
+                        <td>CashBox token in your wallet:</td>
+                        <td>{mypoolbalance}</td>
+                      </tr>
+                      <tr>
+                        <td>Cash in your wallet:</td>
+                        <td>{mycashbalance}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
-            <div class="row">
-              <div class="col-md-10 offset-md-1 section">
-                <h3 class="section-heading">CONTRACT ADDRESSES</h3>
-                <table class="table text-left">
-                  <tbody>
-                    <tr>
-                      <td>DAI Address:</td>
-                      <td>0x6b175474e89094c44da98b954eedeac495271d0f</td>
-                    </tr>
-                    <tr>
-                      <td class="text-break">Pool Token Address: </td>
-                      <td>0x405594E2379f393F9A00ceF2f2f0A844Efcfd6eC</td>
-                    </tr>
-                    <tr>
-                      <td class="text-break">Asset Token Address:</td>
-                      <td>0x86361E8b7900D7E819A471d712eF25A9c05b5588</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <br></br>
+              <br></br>
+              <br></br>
+
+              <div class="row">
+                <div class="col-md-10 offset-md-1 section">
+                  <h3 class="section-heading">CONTRACT ADDRESSES</h3>
+                  <table class="table text-left">
+                    <tbody>
+                      <tr>
+                        <td>Cash Address:</td>
+                        <td>0x58eCf1a6B2af462E69765261e15536ddef8A8C41</td>
+                      </tr>
+                      <tr>
+                        <td class="text-break">Pool Token Address: </td>
+                        <td>0x9312b558cA3659909a38C27802bB46C5AC541552</td>
+                      </tr>
+                      <tr>
+                        <td class="text-break">Asset Token Address:</td>
+                        <td>0x1e615aF65Ab0183A0CEbAa4Dc709e8a030F4a5E9</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
-          </div>
-
           </div>
         </div>
-
       </div>
 
-      <br></br><br></br> 
-
+      <br></br>
+      <br></br>
     </div>
   );
 };

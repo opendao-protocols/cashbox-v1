@@ -3,9 +3,12 @@ import Web3 from "web3";
 import Navbar from "./Navbar";
 // const EthereumTx = require("ethereumjs-tx").Transaction;
 import Body from "./Body";
-import ContractDetails from "./contracts/ContractDetails.json";
+import ContractDetails from "./contractsDetails/ContractDetails.json";
 import ContractDeployment from "./ContractDeployment";
 import Admin from "./Admin";
+// import { BigInt } from "BigInt";
+// import "BigInt";
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -27,27 +30,29 @@ const App = () => {
   const [account, setAccount] = useState("");
   const [loading, setLoading] = useState(true);
   const [stocksc, setstocksc] = useState();
-  const [daisc, setdaisc] = useState();
+  const [cashDecimals, setCashDecimals] = useState();
+  const [stockDecimals, setStockDecimals] = useState();
+  const [cashsc, setcashsc] = useState();
   const [stocktokensc, setstocktokensc] = useState();
   const [stockpooltokensc, setstockpooltokensc] = useState();
 
   const [pooltokenTotalSupply, setpooltokenTotalSupply] = useState(0);
   const [contractstockTokenBalance, setcontractstockTokenBalance] = useState(0);
-  const [contractDaIBalance, setcontractDaIBalance] = useState(0);
-  const [contractDaIValuation, setcontractDaIValuation] = useState(0);
+  const [contractCashBalance, setcontractCashBalance] = useState(0);
+  const [contractCashValuation, setcontractCashValuation] = useState(0);
   // const [stockTokenAddress, setstockTokenAddress] = useState("");
   // const [stockPoolTokenAddress, setstockPoolTokenAddress] = useState("");
-  const [ddaiValauationCap, setddaiValauationCap] = useState();
+  const [dcashValauationCap, setdcashValauationCap] = useState();
   const [urlll, seturll] = useState();
   const [data, setdata] = useState({
     url: "",
-    daicap: 0,
+    cashcap: 0,
   });
   const [mystockbalance, setmystockbalance] = useState(0);
   const [mypoolbalance, setmypoolbalance] = useState(0);
-  const [mydaibalance, setmydaibalance] = useState(0);
-  const [pooltodai, setpooltodai] = useState(0);
-  const [stocktodai, setstocktodai] = useState(0);
+  const [mycashbalance, setmycashbalance] = useState(0);
+  const [pooltocash, setpooltocash] = useState(0);
+  const [stocktocash, setstocktocash] = useState(0);
   const [contract, setContract] = useState({});
 
   const loadWeb3 = async () => {
@@ -71,12 +76,13 @@ const App = () => {
     console.log(url);
 
     const accounts = await web3.eth.getAccounts();
-
     setAccount(accounts[0]);
     const networkId = await web3.eth.net.getId();
 
     if (networkId === 42) {
-      const contract = new web3.eth.Contract(ContractDetails.stockLiquidatorABI);
+      const contract = new web3.eth.Contract(
+        ContractDetails.stockLiquidatorABI
+      );
       setContract(contract);
 
       const Stock = new web3.eth.Contract(
@@ -84,8 +90,11 @@ const App = () => {
         ContractDetails.stockLiquidatorAddress
       );
 
-      const daitoken = new web3.eth.Contract(ContractDetails.ERC20ABI, ContractDetails.daiAddress);
-      setdaisc(daitoken);
+      const cashtoken = new web3.eth.Contract(
+        ContractDetails.ERC20ABI,
+        ContractDetails.cashAddress
+      );
+      setcashsc(cashtoken);
       const stocktoken = new web3.eth.Contract(
         ContractDetails.ERC20ABI,
         ContractDetails.stockTokenAddress
@@ -98,10 +107,15 @@ const App = () => {
       // setstockpooltokensc(stockpooltoken);
       setstocksc(Stock);
 
-      const daibalance = await daitoken.methods.balanceOf(accounts[0]).call();
-      let daibalanceupdate = await web3.utils.fromWei(daibalance);
+      let cashDecimals = await Stock.methods.cashDecimals().call();
+      let stockDecimals = await stocktoken.methods.decimals().call();
+      setCashDecimals(cashDecimals);
+      setStockDecimals(stockDecimals);
 
-      setmydaibalance(daibalanceupdate);
+      const cashbalance = await cashtoken.methods.balanceOf(accounts[0]).call();
+      let cashbalanceupdate = await (cashbalance / 10 ** cashDecimals);
+
+      setmycashbalance(cashbalanceupdate);
       const pooltokenbalance = await Stock.methods
         .balanceOf(accounts[0])
         .call();
@@ -112,23 +126,22 @@ const App = () => {
       const stockbalance = await stocktoken.methods
         .balanceOf(accounts[0])
         .call();
-      let stockbalanceupdate = await web3.utils.fromWei(stockbalance);
+      let stockbalanceupdate = await (stockbalance / 10 ** stockDecimals);
       setmystockbalance(stockbalanceupdate);
 
-      let daivalauationcap = await Stock.methods.daiValauationCap().call();
-      let updatedonedaicap = web3.utils.fromWei(daivalauationcap);
-      setddaiValauationCap(updatedonedaicap);
+      let cashvalauationcap = await Stock.methods.cashValauationCap().call();
+      let updatedonecashcap = await (cashvalauationcap / 10 ** cashDecimals);
+      setdcashValauationCap(updatedonecashcap);
 
-      let geturl = await Stock.methods.URL().call();
-      console.log(geturl, daivalauationcap);
+      let geturl = await Stock.methods.url().call();
       seturll(geturl);
       // await setdata({
       //   url: geturl.toString(),
-      //   daicap: daivalauationcap,
+      //   cashcap: cashvalauationcap,
       // });
 
       const poolTokenTotalSupply = await Stock.methods
-        .poolTokenTotalSupply()
+        .totalSupply()
         .call()
         .then(function (result) {
           let updatedone = web3.utils.fromWei(result);
@@ -138,57 +151,43 @@ const App = () => {
         .contractStockTokenBalance()
         .call()
         .then(function (result) {
-          let updatedone = web3.utils.fromWei(result);
+          let updatedone = result / 10 ** stockDecimals;
           setcontractstockTokenBalance(updatedone);
         });
-      const contractDAIBalance = await Stock.methods
-        .contractDAIBalance()
+      const contractCashBalance = await Stock.methods
+        .contractCashBalance()
         .call()
         .then(function (result) {
-          let updatedone = web3.utils.fromWei(result);
-          setcontractDaIBalance(updatedone);
+          let updatedone = result / 10 ** cashDecimals;
+          setcontractCashBalance(updatedone);
         });
-      const contractDAIValuation = await Stock.methods
-        .contractDAIValuation()
+      const contractCashValuation = await Stock.methods
+        .contractCashValuation()
         .call()
         .then(function (result) {
-          let updatedone = web3.utils.fromWei(result);
-          setcontractDaIValuation(updatedone);
-        });
-
-      // const stockTokenRate = Stock.methods.stockTokenRate().call();
-      // const StockTokenAddress = Stock.methods
-      //   .StockTokenAddress()
-      //   .call()
-      //   .then(function (result) {
-      //     setstockTokenAddress(result);
-      //   });
-      // const StockPoolTokenAddress = Stock.methods
-      //   .StockPoolTokenAddress()
-      //   .call()
-      //   .then(function (result) {
-      //     setstockPoolTokenAddress(result);
-      //   });
-
-      const pooltodaiupdate = Stock.methods
-        .PooltoDAI_rate()
-        .call()
-        .then(function (result) {
-          setpooltodai(result);
+          let updatedone = result / 10 ** cashDecimals;
+          setcontractCashValuation(updatedone);
         });
 
-      const stocktodaiupdate = Stock.methods
-        .StocktoDAI_rate()
+      const pooltocashupdate = Stock.methods
+        .poolToCashRate()
         .call()
         .then(function (result) {
-          let updatedone = web3.utils.fromWei(result);
-          setstocktodai(updatedone);
+          setpooltocash(result);
+        });
+
+      const stocktocashupdate = Stock.methods
+        .stockToCashRate()
+        .call()
+        .then(async function (result) {
+          let updatedone = result / 10 ** cashDecimals;
+          setstocktocash(updatedone);
         });
 
       // console.log(geturl);
       // console.log(poolTokenTotalSupply);
       // console.log(contractStockTokenBalance);
-      // console.log(contractDAIBalance);
+      // console.log(contractCashBalance);
       // // console.log(stockTokenRate);
       // console.log(StockTokenAddress);
       // console.log(StockPoolTokenAddress);
@@ -205,7 +204,7 @@ const App = () => {
   };
 
   const onsubmitdetails = async (
-    daiaddress,
+    cashaddress,
     stockTokenAddress,
     UppercapLimit,
     tokenname,
@@ -215,12 +214,11 @@ const App = () => {
     const web3 = window.web3;
     let bytecode = ContractDetails.bytecode;
 
-    const uppercapinwei = window.web3.utils.toWei(UppercapLimit.toString());
-    console.log(uppercapinwei);
+    const uppercapinwei = UppercapLimit * 10 ** cashDecimals;
     let payload = {
       data: bytecode,
       arguments: [
-        daiaddress,
+        cashaddress,
         stockTokenAddress,
         uppercapinwei,
         tokenname,
@@ -249,7 +247,18 @@ const App = () => {
   };
 
   const redeemStockToken = async (a) => {
-    let valueWei = window.web3.utils.toWei(a.toString());
+    let valueWei = window.web3.utils.toWei(a).toString();
+
+    var b = parseInt(cashDecimals);
+    let c, d;
+    if (b < 18) {
+      d = 18 - b;
+      d = 10 ** d;
+      valueWei = parseInt(valueWei) / 100;
+    }
+
+    console.log(valueWei, b, c, d);
+    valueWei = valueWei.toString();
     await stocktokensc.methods
       .approve(ContractDetails.stockLiquidatorAddress, valueWei)
       .send({ from: account })
@@ -273,8 +282,19 @@ const App = () => {
   };
 
   const mintPoolToken = async (a) => {
-    let valueWei = window.web3.utils.toWei(a.toString());
-    await daisc.methods
+    let valueWei = window.web3.utils.toWei(a).toString();
+
+    var b = parseInt(cashDecimals);
+    let c, d;
+    if (b < 18) {
+      d = 18 - b;
+      d = 10 ** d;
+      valueWei = parseInt(valueWei) / 100;
+    }
+
+    console.log(valueWei, b, c, d);
+    valueWei = valueWei.toString();
+    await cashsc.methods
       .approve(ContractDetails.stockLiquidatorAddress, valueWei)
       .send({ from: account })
       .once("receipt", async (receipt) => {})
@@ -294,7 +314,18 @@ const App = () => {
   };
 
   const burnPoolToken = async (a) => {
-    let valueWei = window.web3.utils.toWei(a.toString());
+    let valueWei = window.web3.utils.toWei(a).toString();
+
+    var b = parseInt(cashDecimals);
+    let c, d;
+    if (b < 18) {
+      d = 18 - b;
+      d = 10 ** d;
+      valueWei = parseInt(valueWei) / 100;
+    }
+
+    console.log(valueWei, b, c, d);
+    valueWei = valueWei.toString();
     console.log(a);
     await stocksc.methods
       .approve(ContractDetails.stockLiquidatorAddress, valueWei)
@@ -316,10 +347,21 @@ const App = () => {
       });
   };
 
-  const updateDAIValuationCap = async (a) => {
-    let valueWei = window.web3.utils.toWei(a.toString());
+  const updateCashValuationCap = async (a) => {
+    let valueWei = window.web3.utils.toWei(a).toString();
+
+    var b = parseInt(cashDecimals);
+    let c, d;
+    if (b < 18) {
+      d = 18 - b;
+      d = 10 ** d;
+      valueWei = parseInt(valueWei) / 100;
+    }
+
+    console.log(valueWei, b, c, d);
+    valueWei = valueWei.toString();
     await stocksc.methods
-      .updateDAIValuationCap(valueWei)
+      .updateCashValuationCap(valueWei)
       .send({ from: account })
       .once("receipt", async (receipt) => {
         setLoading(false);
@@ -384,19 +426,19 @@ const App = () => {
                     redeemStockToken={redeemStockToken}
                     mintPoolToken={mintPoolToken}
                     burnPoolToken={burnPoolToken}
-                    updateDAIValuationCap={updateDAIValuationCap}
+                    updateCashValuationCap={updateCashValuationCap}
                     changeOwner={changeOwner}
                     pooltokenTotalSupply={pooltokenTotalSupply}
-                    contractDaIBalance={contractDaIBalance}
+                    contractCashBalance={contractCashBalance}
                     contractstockTokenBalance={contractstockTokenBalance}
-                    contractDaIValuation={contractDaIValuation}
-                    mydaibalance={mydaibalance}
+                    contractCashValuation={contractCashValuation}
+                    mycashbalance={mycashbalance}
                     mystockbalance={mystockbalance}
                     mypoolbalance={mypoolbalance}
-                    pooltodai={pooltodai}
-                    stocktodai={stocktodai}
+                    pooltocash={pooltocash}
+                    stocktocash={stocktocash}
                     updateurl={updateurl}
-                    ddaiValauationCap={ddaiValauationCap}
+                    dcashValauationCap={dcashValauationCap}
                     urlll={urlll}
                   />
                 </Fragment>
@@ -411,19 +453,19 @@ const App = () => {
                     redeemStockToken={redeemStockToken}
                     mintPoolToken={mintPoolToken}
                     burnPoolToken={burnPoolToken}
-                    updateDAIValuationCap={updateDAIValuationCap}
+                    updateCashValuationCap={updateCashValuationCap}
                     changeOwner={changeOwner}
                     pooltokenTotalSupply={pooltokenTotalSupply}
-                    contractDaIBalance={contractDaIBalance}
+                    contractCashBalance={contractCashBalance}
                     contractstockTokenBalance={contractstockTokenBalance}
-                    contractDaIValuation={contractDaIValuation}
-                    mydaibalance={mydaibalance}
+                    contractCashValuation={contractCashValuation}
+                    mycashbalance={mycashbalance}
                     mystockbalance={mystockbalance}
                     mypoolbalance={mypoolbalance}
-                    pooltodai={pooltodai}
-                    stocktodai={stocktodai}
+                    pooltocash={pooltocash}
+                    stocktocash={stocktocash}
                     updateurl={updateurl}
-                    ddaiValauationCap={ddaiValauationCap}
+                    dcashValauationCap={dcashValauationCap}
                     urlll={urlll}
                   />
                 </Fragment>
@@ -437,18 +479,18 @@ const App = () => {
                     redeemStockToken={redeemStockToken}
                     mintPoolToken={mintPoolToken}
                     burnPoolToken={burnPoolToken}
-                    updateDAIValuationCap={updateDAIValuationCap}
+                    updateCashValuationCap={updateCashValuationCap}
                     changeOwner={changeOwner}
                     pooltokenTotalSupply={pooltokenTotalSupply}
-                    contractDaIBalance={contractDaIBalance}
+                    contractCashBalance={contractCashBalance}
                     contractstockTokenBalance={contractstockTokenBalance}
-                    contractDaIValuation={contractDaIValuation}
-                    mydaibalance={mydaibalance}
+                    contractCashValuation={contractCashValuation}
+                    mycashbalance={mycashbalance}
                     mystockbalance={mystockbalance}
                     mypoolbalance={mypoolbalance}
-                    pooltodai={pooltodai}
-                    stocktodai={stocktodai}
-                    ddaiValauationCap={ddaiValauationCap}
+                    pooltocash={pooltocash}
+                    stocktocash={stocktocash}
+                    dcashValauationCap={dcashValauationCap}
                     urlll={urlll}
                     data={data}
                   />

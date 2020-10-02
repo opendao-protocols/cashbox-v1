@@ -5,19 +5,19 @@ const Admin = ({
   redeemStockToken,
   mintPoolToken,
   burnPoolToken,
-  updateDAIValuationCap,
+  updateCashValuationCap,
   changeOwner,
   pooltokenTotalSupply,
-  contractDaIBalance,
+  contractCashBalance,
   contractstockTokenBalance,
-  contractDaIValuation,
-  stocktodai,
-  mydaibalance,
+  contractCashValuation,
+  stocktocash,
+  mycashbalance,
   mypoolbalance,
   mystockbalance,
-  pooltodai,
+  pooltocash,
   updateurl,
-  ddaiValauationCap,
+  dcashValauationCap,
   urlll,
   data,
 }) => {
@@ -60,8 +60,8 @@ const Admin = ({
     redeemStockToken(sellstockvalue.toString());
   };
 
-  const onsubmitupdateDAIValuationCap = () => {
-    updateDAIValuationCap(updatestockprice.toString());
+  const onsubmitupdateCashValuationCap = () => {
+    updateCashValuationCap(updatestockprice.toString());
   };
 
   const onchangeurll = (e) => {
@@ -119,8 +119,8 @@ const Admin = ({
               />
             </div>
             <div class="col-md-6">
-              <button class="btn btn-main btn-block" onClick={onsubmitupdateDAIValuationCap}>
-                Update DAI Valuation Cap
+              <button class="btn btn-main btn-block" onClick={onsubmitupdateCashValuationCap}>
+                Update Cash Valuation Cap
               </button>
             </div>
           </div>
@@ -141,7 +141,7 @@ const Admin = ({
             </div>
             <div class="col-md-6">
               <button class="btn btn-main btn-block" onClick={onsubmitminttoken}>
-                Deposit DAI and get CashBox tokens
+                Deposit Cash and get CashBox tokens
               </button>
             </div>
           </div>
@@ -162,7 +162,7 @@ const Admin = ({
             </div>
             <div class="col-md-6">
               <button class="btn btn-main btn-block" onClick={onsubmitsellstock}>
-                Sell Asset tokens to get DAI
+                Sell Asset tokens to get Cash
               </button>
             </div>
           </div>
@@ -210,8 +210,8 @@ const Admin = ({
                   <table class="table text-left width-lg">
                     <tbody>
                       <tr>
-                        <td>DAI in Cashbox:</td>
-                        <td>{contractDaIBalance}</td>
+                        <td>Cash in Cashbox:</td>
+                        <td>{contractCashBalance}</td>
                       </tr>
                       <tr>
                         <td>Asset tokens in CashBox:</td>
@@ -222,20 +222,20 @@ const Admin = ({
                         <td>{pooltokenTotalSupply}</td>
                       </tr>
                       <tr>
-                        <td>Asset token price in DAI:</td>
-                        <td>{stocktodai}</td>
+                        <td>Asset token price in Cash:</td>
+                        <td>{stocktocash}</td>
                       </tr>
                       <tr>
-                        <td>CashBox token price in DAI:</td>
-                        <td>{Number(contractDaIValuation / pooltokenTotalSupply).toFixed(2)}</td>
+                        <td>CashBox token price in Cash:</td>
+                        <td>{Number(contractCashValuation / pooltokenTotalSupply).toFixed(2)}</td>
                       </tr>
                       <tr>
                         <td>CashBox market cap ceiling:</td>
-                        <td>{ddaiValauationCap}</td>
+                        <td>{dcashValauationCap}</td>
                       </tr>
                       <tr>
                         <td>CashBox current market cap:</td>
-                        <td>{Number(pooltokenTotalSupply * (contractDaIValuation / pooltokenTotalSupply)).toFixed(2)}</td>
+                        <td>{Number(pooltokenTotalSupply * (contractCashValuation / pooltokenTotalSupply)).toFixed(2)}</td>
                       </tr>
                       <tr>
                         <td>URL:</td>
@@ -268,8 +268,8 @@ const Admin = ({
                       <td>{mypoolbalance}</td>
                     </tr>
                     <tr>
-                      <td>DAI in your wallet:</td>
-                      <td>{mydaibalance}</td>
+                      <td>Cash in your wallet:</td>
+                      <td>{mycashbalance}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -286,8 +286,8 @@ const Admin = ({
                 <table class="table text-left">
                   <tbody>
                     <tr>
-                      <td>DAI Address:</td>
-                      <td>0x6b175474e89094c44da98b954eedeac495271d0f</td>
+                      <td>Cash Address:</td>
+                      <td>0x58eCf1a6B2af462E69765261e15536ddef8A8C41</td>
                     </tr>
                     <tr>
                       <td class="text-break">Pool Token Address: </td>
@@ -295,7 +295,7 @@ const Admin = ({
                     </tr>
                     <tr>
                       <td class="text-break">Asset Token Address:</td>
-                      <td>0x86361E8b7900D7E819A471d712eF25A9c05b5588</td>
+                      <td>0x9312b558cA3659909a38C27802bB46C5AC541552</td>
                     </tr>
                   </tbody>
                 </table>

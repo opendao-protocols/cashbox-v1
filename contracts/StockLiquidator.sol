@@ -417,120 +417,6 @@ contract ERC20 is Context, IERC20 {
    
 }
 
-contract ERC20Burnable is Context, ERC20 {
-    /**
-     * @dev Destroys `amount` tokens from the caller.
-     *
-     * See {ERC20-_burn}.
-     */
-    function burn(uint256 amount) public  {
-        _burn(_msgSender(), amount);
-    }
-
-    /**
-     * @dev Destroys `amount` tokens from `account`, deducting from the caller's
-     * allowance.
-     *
-     * See {ERC20-_burn} and {ERC20-allowance}.
-     *
-     * Requirements:
-     *
-     * - the caller must have allowance for `accounts`'s tokens of at least
-     * `amount`.
-     */
-    function burnFrom(address account,address slContract, uint256 amount) public  {
-        uint256 decreasedAllowance = allowance(account, slContract).sub(amount, "ERC20: burn amount exceeds allowance");
-
-        _approve(account, _msgSender(), decreasedAllowance);
-        _burn(account, amount);
-    }
-}
-
-library Roles {
-    struct Role {
-        mapping (address => bool) bearer;
-    }
-
-    /**
-     * @dev Give an account access to this role.
-     */
-    function add(Role storage role, address account) internal {
-        require(!has(role, account), "Roles: account already has role");
-        role.bearer[account] = true;
-    }
-
-    /**
-     * @dev Remove an account's access to this role.
-     */
-    function remove(Role storage role, address account) internal {
-        require(has(role, account), "Roles: account does not have role");
-        role.bearer[account] = false;
-    }
-
-    /**
-     * @dev Check if an account has this role.
-     * @return bool
-     */
-    function has(Role storage role, address account) internal view returns (bool) {
-        require(account != address(0), "Roles: account is the zero address");
-        return role.bearer[account];
-    }
-}
-
-contract MinterRole is Context {
-    using Roles for Roles.Role;
-
-    event MinterAdded(address indexed account);
-    event MinterRemoved(address indexed account);
-
-    Roles.Role private _minters;
-
-    constructor () internal {
-        _addMinter(_msgSender());
-    }
-
-    modifier onlyMinter() {
-        require(isMinter(_msgSender()), "MinterRole: caller does not have the Minter role");
-        _;
-    }
-
-    function isMinter(address account) public view returns (bool) {
-        return _minters.has(account);
-    }
-
-    function addMinter(address account) public onlyMinter {
-        _addMinter(account);
-    }
-
-    function renounceMinter() public {
-        _removeMinter(_msgSender());
-    }
-
-    function _addMinter(address account) internal {
-        _minters.add(account);
-        emit MinterAdded(account);
-    }
-
-    function _removeMinter(address account) internal {
-        _minters.remove(account);
-        emit MinterRemoved(account);
-    }
-}
-
-contract ERC20Mintable is ERC20, MinterRole {
-    /**
-     * @dev See {ERC20-_mint}.
-     *
-     * Requirements:
-     *
-     * - the caller must have the {MinterRole}.
-     */
-    function mint(address account, uint256 amount) public onlyMinter returns (bool) {
-        _mint(account, amount);
-        return true;
-    }
-}
-
 contract ERC20Detailed is IERC20 {
   string private _name;
   string private _symbol;
@@ -564,21 +450,30 @@ contract ERC20Detailed is IERC20 {
   }
 }
 
-contract StockLiquiditator is ERC20Detailed,ERC20Burnable,ERC20Mintable
+contract StockLiquiditator is ERC20,ERC20Detailed
 {
 
     using SafeMath for uint256;
     
-    uint256 multiplier=10**18;
+    uint256 public cashDecimals;
+    uint256 public stockTokenMultiplier;
     
-    ERC20 internal DAIToken;
-    ERC20 internal StockToken;
+    ERC20Detailed internal cash;
+    ERC20Detailed internal stockToken;
     
-    uint256 public StocktoDAI_rate=50000000000000000000;
-    uint256 public PooltoDAI_rate;
-    uint256 public daiValauationCap;
+    uint256 public stockToCashRate;
+    uint256 public poolToCashRate;
+    uint256 public cashValauationCap;
     
-    string public URL;
+    string public url;
+    
+    event UrlUpdated(string _url);
+    event ValuationCapUpdated(uint256 cashCap);
+    event OwnerChanged(address newOwner);
+    event PoolRateUpdated(uint256 poolrate);
+    event PoolTokensMinted(address user,uint256 inputCashAmount,uint256 mintedPoolAmount);
+    event PoolTokensBurnt(address user,uint256 burntPoolAmount,uint256 outputStockAmount,uint256 outputCashAmount);
+    event StockTokensRedeemed(address user,uint256 redeemedStockToken,uint256 outputCashAmount);
     
     function () external payable {  //fallback function
         
@@ -587,137 +482,142 @@ contract StockLiquiditator is ERC20Detailed,ERC20Burnable,ERC20Mintable
     address payable public owner;
     
     modifier onlyOwner() {
-        require (msg.sender == owner);
+        require (msg.sender == owner,"Account not Owner");
         _;
     }
         
-    constructor (address DAITokenAddr,address StockTokenAddr,uint256 daiCap,string memory name,string memory symbol,string memory url) 
-    ERC20Detailed( name, symbol, 18)  
-    public  {
+    constructor (address cashAddress,address stockTokenAddress,uint256 cashCap,string memory name,string memory symbol,string memory _url) 
+    public ERC20Detailed( name, symbol, 18)  
+    {
         owner = msg.sender;
-        require(StockTokenAddr != address(0), "StockToken is the zero address");
-        require(DAITokenAddr != address(0), "DAIToken is the zero address");
-        DAIToken = ERC20(DAITokenAddr);
-        StockToken = ERC20(StockTokenAddr);
-        setUpdatedPoolRate();
-        updateDAIValuationCap(daiCap);
-        updateURL(url);
+        require(stockTokenAddress != address(0), "stockToken is the zero address");
+        require(cashAddress != address(0), "cash is the zero address");
+        cash = ERC20Detailed(cashAddress);
+        stockToken = ERC20Detailed(stockTokenAddress);
+        cashDecimals = cash.decimals();
+        stockTokenMultiplier = (10**uint256(stockToken.decimals()));
+        stockToCashRate = (10**(cashDecimals)).mul(50);
+        updatePoolRate();
+        updateCashValuationCap(cashCap);
+        updateURL(_url);
     }
     
     function updateURL(string memory _url) public onlyOwner returns(string memory){
-        URL=_url;
-        return URL;
+        url=_url;
+        emit UrlUpdated(_url);
+        return url;
     }
     
-    function updateDAIValuationCap(uint256 daiCap) public onlyOwner returns(uint256){
-        daiValauationCap=daiCap;
-        return daiValauationCap;
+    function updateCashValuationCap(uint256 cashCap) public onlyOwner returns(uint256){
+        cashValauationCap=cashCap;
+        emit ValuationCapUpdated(cashCap);
+        return cashValauationCap;
     }
     
-    function changeOwner(address payable newOwner) public onlyOwner {
+    function changeOwner(address payable newOwner) external onlyOwner {
         owner=newOwner;
+        emit OwnerChanged(newOwner);
     }
     
-    function StockTokenAddress() public view returns (address) {
-        return address(StockToken);
+    function stockTokenAddress() public view returns (address) {
+        return address(stockToken);
     }
     
-    
-    function _preValidateData(address beneficiary, uint256 Amount) internal pure 
-    {
-        require(beneficiary != address(0), "Beneficiary is the zero address");
-        require(Amount != 0, "Amount is 0");
+    function _preValidateData(address beneficiary, uint256 amount) internal pure {
+        require(beneficiary != address(0), "Beneficiary can't be zero address");
+        require(amount != 0, "amount can't be 0");
     }
     
-    function contractDAIBalance() public view returns(uint256 daiBalance){
-        return DAIToken.balanceOf(address(this));
+    function contractCashBalance() public view returns(uint256 cashBalance){
+        return cash.balanceOf(address(this));
     } 
     
     function contractStockTokenBalance() public view returns(uint256 stockTokenBalance){
-        return StockToken.balanceOf(address(this));
+        return stockToken.balanceOf(address(this));
     }
     
-    function stockTokenDAIValuation() internal view returns(uint256){
-        uint256 daiEquivalent=(contractStockTokenBalance().mul(StocktoDAI_rate)).div(multiplier);
-        return daiEquivalent;
+    function stockTokenCashValuation() internal view returns(uint256){
+        uint256 cashEquivalent=(contractStockTokenBalance().mul(stockToCashRate)).div(stockTokenMultiplier);
+        return cashEquivalent;
     }
     
-    function contractDAIValuation() public view returns(uint256 daiValauation){
-        uint256 daiEquivalent=(contractStockTokenBalance().mul(StocktoDAI_rate)).div(multiplier);
-        return contractDAIBalance().add(daiEquivalent);
-    }
-    
-    function poolTokenTotalSupply() public view returns(uint256){
-        return totalSupply();
+    function contractCashValuation() public view returns(uint256 cashValauation){
+        uint256 cashEquivalent=(contractStockTokenBalance().mul(stockToCashRate)).div(stockTokenMultiplier);
+        return contractCashBalance().add(cashEquivalent);
     }
 
-
-    function setUpdatedPoolRate() public returns (uint256 poolrate) {
-        if(poolTokenTotalSupply()==0){
-          PooltoDAI_rate=multiplier;
-          return PooltoDAI_rate;
+    function updatePoolRate() public returns (uint256 poolrate) {
+        if(totalSupply()==0){
+          poolToCashRate = (10**(cashDecimals)).mul(1);
         }
         else {
-            PooltoDAI_rate=( (contractDAIValuation().mul(multiplier)).div(poolTokenTotalSupply()) );
-            return PooltoDAI_rate;
+            poolToCashRate=( (contractCashValuation().mul(1e18)).div(totalSupply()) );
         }
+        emit PoolRateUpdated(poolrate);
+        return poolToCashRate;
     }
     
-    
-    function mintPoolToken(uint256 inputDAIAmount) external {    //insert only dai & minting pool token
-        if(daiValauationCap!=0)
+    function mintPoolToken(uint256 inputCashAmount) external {    
+        if(cashValauationCap!=0)
         {
-            require(inputDAIAmount.add(contractDAIValuation())<=daiValauationCap,"Can't mint ,input DAI should be less than or equal to the daiValauationCap");
+            require(inputCashAmount.add(contractCashValuation())<=cashValauationCap,"inputCashAmount exceeds cashValauationCap");
         }
         address sender= msg.sender;
-        _preValidateData(sender,inputDAIAmount);
-        require(DAIToken.balanceOf(sender)>=inputDAIAmount,"Insufficient Balance");
-        setUpdatedPoolRate();
-        DAIToken.transferFrom(sender,address(this),inputDAIAmount);
-
+        _preValidateData(sender,inputCashAmount);
+        updatePoolRate();
+        uint256 balanceBeforeTransfer = cash.balanceOf(address(this));
+        cash.transferFrom(sender,address(this),inputCashAmount);
+        uint256 balanceAfterTransfer = cash.balanceOf(address(this));
+        require(balanceAfterTransfer == balanceBeforeTransfer.add(inputCashAmount),"Sent & Received Amount mismatched");
         // calculate pool token amount to be minted
-        uint256 poolTokens = ( (inputDAIAmount.mul(multiplier)).div(PooltoDAI_rate) );
+        uint256 poolTokens = ( (inputCashAmount.mul(1e18)).div(poolToCashRate) );
         _mint(sender, poolTokens); //Minting  Pool Token
+        emit PoolTokensMinted(sender,inputCashAmount,poolTokens);
     }
     
     function burnPoolToken(uint256 poolTokenAmount) external {  
         address sender= msg.sender;
         _preValidateData(sender,poolTokenAmount);
         
-        require(balanceOf(sender)>=poolTokenAmount,"Insufficient Balance");
-        uint256 burnallowance = allowance(sender, address(this));
-        require(burnallowance>=poolTokenAmount,"Insufficient Burn Allowance");
+        updatePoolRate();
+        uint256 cashToRedeem=( (poolTokenAmount.mul(poolToCashRate)).div(1e18) );
+        _burn(sender, poolTokenAmount);
         
-        setUpdatedPoolRate();
-        uint256 daiToRedeem=( (poolTokenAmount.mul(PooltoDAI_rate)).div(multiplier) );
-        burnFrom(sender,address(this), poolTokenAmount);
-
-        if( stockTokenDAIValuation()>=daiToRedeem )
+        uint256 outputStockToken = 0;
+        uint256 outputCashAmount = 0;
+        
+        if( stockTokenCashValuation()>=cashToRedeem )
         {
-         uint256 outputStockToken=( (daiToRedeem.mul(multiplier)).div(StocktoDAI_rate) );//calculate stock token amount to be return
-         StockToken.transfer(sender,outputStockToken);
+         outputStockToken=( (cashToRedeem.mul(stockTokenMultiplier)).div(stockToCashRate) );//calculate stock token amount to be return
+         stockToken.transfer(sender,outputStockToken);
         }
         
-        else if( daiToRedeem>stockTokenDAIValuation() )
+        else if( cashToRedeem>stockTokenCashValuation() )
         {
-        uint256 allStockToken=contractStockTokenBalance();
-        uint256 otputDAIAmount=daiToRedeem.sub(stockTokenDAIValuation());// calculate dai amount to be return
-        StockToken.transfer(sender,allStockToken);
-        DAIToken.transfer(sender,otputDAIAmount);
+        outputStockToken=contractStockTokenBalance();
+        outputCashAmount=cashToRedeem.sub(stockTokenCashValuation());// calculate cash amount to be return
+        stockToken.transfer(sender,outputStockToken);
+        
+        uint256 balanceBeforeTransfer = cash.balanceOf(sender);
+        cash.transfer(sender,outputCashAmount);
+        uint256 balanceAfterTransfer = cash.balanceOf(sender);
+        require(balanceAfterTransfer == balanceBeforeTransfer.add(outputCashAmount),"Sent & Received Amount mismatched");
         }
+        emit PoolTokensBurnt(sender,poolTokenAmount,outputStockToken,outputCashAmount);
     }
     
     function redeemStockToken(uint256 stockTokenAmount) external{
         address sender= msg.sender;
         _preValidateData(sender,stockTokenAmount);
+        stockToken.transferFrom(sender,address(this),stockTokenAmount);
         
-        require(StockToken.balanceOf(sender)>=stockTokenAmount,"Insufficient Balance");
-        StockToken.transferFrom(sender,address(this),stockTokenAmount);
-        
-        
-        uint256 otputDAIAmount=(stockTokenAmount.mul(StocktoDAI_rate)).div(10**18);// calculate dai amount to be return
-        require(DAIToken.balanceOf(address(this))>=otputDAIAmount,"Not enough Dai in Contract to payback");
-        DAIToken.transfer(sender,otputDAIAmount);
+        // calculate Cash amount to be return
+        uint256 outputCashAmount=(stockTokenAmount.mul(stockToCashRate)).div(stockTokenMultiplier);
+        uint256 balanceBeforeTransfer = cash.balanceOf(sender);
+        cash.transfer(sender,outputCashAmount);
+        uint256 balanceAfterTransfer = cash.balanceOf(sender);
+        require(balanceAfterTransfer == balanceBeforeTransfer.add(outputCashAmount),"Sent & Received Amount mismatched");
+        emit StockTokensRedeemed(sender,stockTokenAmount,outputCashAmount);
     }
     
     function kill() external onlyOwner {    //self destruct the code and transfer all contract balance to owner
