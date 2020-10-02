@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./css/body.css";
 import "./css/index.scss";
+import swal from 'sweetalert';
 
 const Body = ({
   redeemStockToken,
@@ -54,6 +55,14 @@ const Body = ({
   };
 
   const onsubmitminttoken = () => {
+    let marketCap = (pooltokenTotalSupply * (contractCashValuation / pooltokenTotalSupply)).toFixed(2);
+    if(marketCap >= dcashValauationCap) {
+      swal("CashBox is full, no more deposits!")
+    }
+    else{
+        swal("You will receive "+ sellmintvalue.toString() + " CashBox tokens for depositing " + sellmintvalue.toString() + " DAI");
+    }
+
     mintPoolToken(sellmintvalue.toString());
   };
 
@@ -156,15 +165,15 @@ const Body = ({
 
       <br></br>
       <br></br>
+      <div className="row">
 
-      <div class="row">
-        <div class="col-md-12">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="row">
-                <div class="col-md-10 offset-md-1 section">
-                  <h3 class="section-heading">STATISTICS</h3>
-                  <table class="table text-left width-lg">
+        <div className="col-md-12">
+          <div className="row">
+          <div className="col-md-6">
+            <div className="row" style={{ height: "100%" }}>
+              <div className="col-md-10 offset-md-1 section">
+                <h3 className="section-heading">STATISTICS</h3>
+                  <table className="table text-left width-lg">
                     <tbody>
                       <tr>
                         <td>Cash in Cashbox:</td>
@@ -242,7 +251,6 @@ const Body = ({
                 </div>
               </div>
 
-              <br></br>
               <br></br>
               <br></br>
 

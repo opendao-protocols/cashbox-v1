@@ -19,6 +19,7 @@
     "react-scripts": "3.4.3",
     "rimble-ui": "^0.14.0",
     "styled-components": "^5.2.0",
+    "sweetalert": "^2.1.2",
     "web3": "^1.2.11"
   },
   "scripts": {

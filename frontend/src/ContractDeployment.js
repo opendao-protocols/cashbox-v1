@@ -80,7 +80,7 @@ const ContractDeployment = ({ onsubmitdetails }) => {
                <input
                   id="inputvalue"
                   type="text"
-                  placeholder="DAI address"
+                  placeholder="Cash token address"
                   name="daiaddress"
                   className="form-control"
                   value={daiaddress}
@@ -97,7 +97,7 @@ const ContractDeployment = ({ onsubmitdetails }) => {
                <input
                   id="inputvalue"
                   type="text"
-                  placeholder="Stock Token Address"
+                  placeholder="Asset Token Address"
                   name="stockTokenAddress"
                   className="form-control"
                   value={stockTokenAddress}
