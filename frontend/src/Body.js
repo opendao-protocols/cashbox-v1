@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./css/body.css";
 import "./css/index.scss";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 
 const Body = ({
   redeemStockToken,
@@ -21,7 +21,7 @@ const Body = ({
   updateurl,
   dcashValauationCap,
   urlll,
-  data,
+  CashSymbol,
 }) => {
   const [sellstockvalue, setsellstockvalue] = useState("");
   const [sellmintvalue, setsellmintvalue] = useState("");
@@ -29,6 +29,13 @@ const Body = ({
   const [owner, setowner] = useState("");
   const [updatestockprice, setupdatestockprice] = useState("");
   const [urll, seturll] = useState("");
+  const [YYY, setYYY] = useState(
+    parseFloat(sellredeemvalue) -
+      parseFloat(contractstockTokenBalance) * parseFloat(stocktocash)
+  );
+  const [YYY1, setYYY1] = useState(
+    parseFloat(sellredeemvalue) / parseFloat(stocktocash)
+  );
   // console.log(data);
   const onchangestockvalue = (e) => {
     setsellstockvalue(e.target.value);
@@ -39,6 +46,12 @@ const Body = ({
   };
 
   const onchangeredeemvalue = (e) => {
+    setYYY(
+      parseFloat(e.target.value) -
+        parseFloat(contractstockTokenBalance) * parseFloat(stocktocash)
+    );
+
+    setYYY1(parseFloat(e.target.value) / parseFloat(stocktocash));
     setsellredeemvalue(e.target.value);
   };
 
@@ -51,23 +64,66 @@ const Body = ({
   };
 
   const onsubmitredeemtoken = () => {
+    let z = parseFloat(sellredeemvalue);
+    let x = parseFloat(contractstockTokenBalance);
+    let y;
+    let xy = parseFloat(contractstockTokenBalance) * parseFloat(stocktocash);
+
+    if (parseFloat(sellredeemvalue) > xy) {
+      y = z - x * parseFloat(stocktocash);
+      swal(
+        "You should recieve " +
+          x.toString() +
+          " " +
+          " Asset Token" +
+          " and " +
+          y.toString() +
+          " " +
+          CashSymbol.toString()
+      );
+    } else {
+      y = z / parseFloat(stocktocash);
+
+      swal("You will receive " + y.toString() + " Asset Token");
+    }
+
     burnPoolToken(sellredeemvalue.toString());
   };
 
   const onsubmitminttoken = () => {
-    let marketCap = (pooltokenTotalSupply * (contractCashValuation / pooltokenTotalSupply)).toFixed(2);
-    if(marketCap >= dcashValauationCap) {
-      swal("CashBox is full, no more deposits!")
-    }
-    else{
-        swal("You will receive "+ sellmintvalue.toString() + " CashBox tokens for depositing " + sellmintvalue.toString() + " DAI");
+    let marketCap = (
+      pooltokenTotalSupply *
+      (contractCashValuation / pooltokenTotalSupply)
+    ).toFixed(2);
+    if (marketCap >= dcashValauationCap) {
+      swal("CashBox is full, no more deposits!");
+    } else {
+      swal(
+        "You will receive " +
+          sellmintvalue.toString() +
+          " CashBox tokens for depositing " +
+          sellmintvalue.toString() +
+          " DAI"
+      );
     }
 
     mintPoolToken(sellmintvalue.toString());
   };
 
   const onsubmitsellstock = () => {
+    let x = parseFloat(sellstockvalue) * parseFloat(stocktocash);
+
+    swal(
+      "You will receive " +
+        x.toString() +
+        " " +
+        CashSymbol.toString() +
+        " for " +
+        sellstockvalue.toString() +
+        " Asset Token"
+    );
     console.log(sellstockvalue.toString());
+
     redeemStockToken(sellstockvalue.toString());
   };
 
@@ -107,7 +163,7 @@ const Body = ({
                   class="btn btn-main btn-block"
                   onClick={onsubmitminttoken}
                 >
-                  Deposit Cash and get CashBox tokens
+                  Deposit {CashSymbol} and get CashBox tokens
                 </button>
               </div>
             </div>
@@ -130,7 +186,7 @@ const Body = ({
                   class="btn btn-main btn-block"
                   onClick={onsubmitsellstock}
                 >
-                  Sell Asset tokens to get Cash
+                  Sell Asset tokens to get {CashSymbol}
                 </button>
               </div>
             </div>
@@ -166,17 +222,16 @@ const Body = ({
       <br></br>
       <br></br>
       <div className="row">
-
         <div className="col-md-12">
           <div className="row">
-          <div className="col-md-6">
-            <div className="row" style={{ height: "100%" }}>
-              <div className="col-md-10 offset-md-1 section">
-                <h3 className="section-heading">STATISTICS</h3>
+            <div className="col-md-6">
+              <div className="row" style={{ height: "100%" }}>
+                <div className="col-md-10 offset-md-1 section">
+                  <h3 className="section-heading">STATISTICS</h3>
                   <table className="table text-left width-lg">
                     <tbody>
                       <tr>
-                        <td>Cash in Cashbox:</td>
+                        <td>{CashSymbol} in Cashbox:</td>
                         <td>{contractCashBalance}</td>
                       </tr>
                       <tr>
@@ -188,15 +243,35 @@ const Body = ({
                         <td>{pooltokenTotalSupply}</td>
                       </tr>
                       <tr>
-                        <td>Asset token price in Cash:</td>
+                        <td>Asset token price in {CashSymbol}:</td>
                         <td>{stocktocash}</td>
                       </tr>
                       <tr>
-                        <td>CashBox token price in Cash:</td>
                         <td>
-                          {Number(
+                          {" "}
+                          {sellredeemvalue} {""}CashBox token gives:
+                        </td>
+                        <td>
+                          {/* {Number(
                             contractCashValuation / pooltokenTotalSupply
-                          ).toFixed(2)}
+                          ).toFixed(2)} */}
+                          {sellredeemvalue === ""
+                            ? "You will receive " + 0 + " Asset Token"
+                            : parseFloat(sellredeemvalue) >
+                              parseFloat(contractstockTokenBalance) *
+                                parseFloat(stocktocash)
+                            ? "You will recieve " +
+                              contractstockTokenBalance +
+                              " " +
+                              "Asset Token" +
+                              " and " +
+                              YYY.toString() +
+                              " " +
+                              CashSymbol.toString()
+                            : "You will receive " +
+                              YYY1.toString() +
+                              " " +
+                              CashSymbol.toString()}
                         </td>
                       </tr>
                       <tr>
@@ -243,7 +318,7 @@ const Body = ({
                         <td>{mypoolbalance}</td>
                       </tr>
                       <tr>
-                        <td>Cash in your wallet:</td>
+                        <td>{CashSymbol} in your wallet:</td>
                         <td>{mycashbalance}</td>
                       </tr>
                     </tbody>
@@ -260,7 +335,7 @@ const Body = ({
                   <table class="table text-left">
                     <tbody>
                       <tr>
-                        <td>Cash Address:</td>
+                        <td>{CashSymbol} Address:</td>
                         <td>0x58eCf1a6B2af462E69765261e15536ddef8A8C41</td>
                       </tr>
                       <tr>

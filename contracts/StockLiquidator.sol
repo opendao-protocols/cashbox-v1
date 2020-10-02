@@ -469,11 +469,11 @@ contract StockLiquiditator is ERC20,ERC20Detailed
     
     event UrlUpdated(string _url);
     event ValuationCapUpdated(uint256 cashCap);
-    event OwnerChanged(address newOwner);
+    event OwnerChanged(address indexed newOwner);
     event PoolRateUpdated(uint256 poolrate);
-    event PoolTokensMinted(address user,uint256 inputCashAmount,uint256 mintedPoolAmount);
-    event PoolTokensBurnt(address user,uint256 burntPoolAmount,uint256 outputStockAmount,uint256 outputCashAmount);
-    event StockTokensRedeemed(address user,uint256 redeemedStockToken,uint256 outputCashAmount);
+    event PoolTokensMinted(address indexed user,uint256 inputCashAmount,uint256 mintedPoolAmount);
+    event PoolTokensBurnt(address indexed user,uint256 burntPoolAmount,uint256 outputStockAmount,uint256 outputCashAmount);
+    event StockTokensRedeemed(address indexed user,uint256 redeemedStockToken,uint256 outputCashAmount);
     
     function () external payable {  //fallback function
         
@@ -486,7 +486,7 @@ contract StockLiquiditator is ERC20,ERC20Detailed
         _;
     }
         
-    constructor (address cashAddress,address stockTokenAddress,uint256 cashCap,string memory name,string memory symbol,string memory _url) 
+    constructor (address cashAddress,address stockTokenAddress,uint256 _stockToCashRate,uint256 cashCap,string memory name,string memory symbol,string memory _url) 
     public ERC20Detailed( name, symbol, 18)  
     {
         owner = msg.sender;
@@ -496,7 +496,7 @@ contract StockLiquiditator is ERC20,ERC20Detailed
         stockToken = ERC20Detailed(stockTokenAddress);
         cashDecimals = cash.decimals();
         stockTokenMultiplier = (10**uint256(stockToken.decimals()));
-        stockToCashRate = (10**(cashDecimals)).mul(50);
+        stockToCashRate = (10**(cashDecimals)).mul(_stockToCashRate);
         updatePoolRate();
         updateCashValuationCap(cashCap);
         updateURL(_url);

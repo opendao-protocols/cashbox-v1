@@ -28,6 +28,7 @@ const App = () => {
   const [loading2, setloading2] = useState(false);
 
   const [account, setAccount] = useState("");
+  const [CashSymbol, setCashSymbol] = useState("");
   const [loading, setLoading] = useState(true);
   const [stocksc, setstocksc] = useState();
   const [cashDecimals, setCashDecimals] = useState();
@@ -107,6 +108,9 @@ const App = () => {
       // setstockpooltokensc(stockpooltoken);
       setstocksc(Stock);
 
+      ///// have to add name ticker
+      let cashsymbol = await cashtoken.methods.symbol().call();
+      setCashSymbol(cashsymbol);
       let cashDecimals = await Stock.methods.cashDecimals().call();
       let stockDecimals = await stocktoken.methods.decimals().call();
       setCashDecimals(cashDecimals);
@@ -467,6 +471,7 @@ const App = () => {
                     updateurl={updateurl}
                     dcashValauationCap={dcashValauationCap}
                     urlll={urlll}
+                    CashSymbol={CashSymbol}
                   />
                 </Fragment>
               )}
@@ -493,6 +498,7 @@ const App = () => {
                     dcashValauationCap={dcashValauationCap}
                     urlll={urlll}
                     data={data}
+                    CashSymbol={CashSymbol}
                   />
                 </Fragment>
               )}
