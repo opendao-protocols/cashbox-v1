@@ -3,7 +3,10 @@ import "./css/body.css";
 import "./css/index.scss";
 import swal from "sweetalert";
 import $ from "jquery";
-import Cookies from 'universal-cookie';
+import Cookies from "universal-cookie";
+import Switch from "react-bootstrap/esm/Switch";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 const Body = ({
   redeemStockToken,
@@ -39,6 +42,16 @@ const Body = ({
     parseFloat(sellredeemvalue) / parseFloat(stocktocash)
   );
   // console.log(data);
+
+  const [state, setState] = React.useState({
+    checkedA: true,
+    checkedB: true,
+  });
+
+  const handleChange = (event) => {
+    setState({ ...state, [event.target.name]: event.target.checked });
+  };
+
   const onchangestockvalue = (e) => {
     setsellstockvalue(e.target.value);
   };
@@ -94,14 +107,12 @@ const Body = ({
 
   const onsubmitminttoken = () => {
     let marketCap = parseFloat(
-      pooltokenTotalSupply *
-      (contractCashValuation / pooltokenTotalSupply)
+      pooltokenTotalSupply * (contractCashValuation / pooltokenTotalSupply)
     );
-    let totalValue = parseFloat(marketCap)+parseFloat(sellmintvalue);
+    let totalValue = parseFloat(marketCap) + parseFloat(sellmintvalue);
     if (totalValue >= dcashValauationCap) {
       swal("CashBox is full, no more deposits!");
-    }
-    else {
+    } else {
       swal(
         "You will receive " +
           sellmintvalue.toString() +
@@ -117,18 +128,17 @@ const Body = ({
   const onsubmitsellstock = () => {
     let x = parseFloat(sellstockvalue) * parseFloat(stocktocash);
 
-    if(contractCashBalance < x ) {
-      swal("Not enough DAI in CashBox")
-    }
-    else {
+    if (contractCashBalance < x) {
+      swal("Not enough DAI in CashBox");
+    } else {
       swal(
-      "You will receive " +
-        x.toString() +
-        " " +
-        CashSymbol.toString() +
-        " for " +
-        sellstockvalue.toString() +
-        " Asset Token"
+        "You will receive " +
+          x.toString() +
+          " " +
+          CashSymbol.toString() +
+          " for " +
+          sellstockvalue.toString() +
+          " Asset Token"
       );
     }
     console.log(sellstockvalue.toString());
@@ -152,7 +162,7 @@ const Body = ({
   };
 
   const showModal = () => {
-    $('#previewModal').modal('show');
+    $("#previewModal").modal("show");
   };
 
   // const cookies = new Cookies();
@@ -169,7 +179,7 @@ const Body = ({
   // if(cookies.get('first_visit_cashbox')) {
   //   showModal();
   // }
-  
+
   return (
     <div className="container">
       <div className="row">
@@ -244,7 +254,6 @@ const Body = ({
             </div>
             <br></br>
             <br></br>
-
           </div>
         </div>
       </div>
@@ -389,83 +398,177 @@ const Body = ({
       <br></br>
       <br></br>
 
-      <div  className="modal" id="previewModal" role="dialog"
-    aria-hidden="true">
-    <div className="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div className="modal-content" style={{backgroundColor: "#FFFFFF"}}>
+      <div className="modal" id="previewModal" role="dialog" aria-hidden="true">
+        <div
+          className="modal-dialog modal-lg modal-dialog-centered"
+          role="document"
+        >
+          <div className="modal-content" style={{ backgroundColor: "#FFFFFF" }}>
             <div className="modal-body py0 px0">
-                <div className="row my0 mx0">
-                    <div className="col-lg-12 py0 px0" style={{backgroundColor: "#FFFFFF", height: "480px"}}>
-                        <div className="py20 px20 d-block">
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div id="onboardingCarousel" className="carousel slide" data-interval="false">
-                          <div className="carousel-inner">                         
-                            <div className="carousel-item active onboarding" style={{padding: "2rem", paddingTop: "1rem"}}>
-                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/1.PNG" alt="First slide" style={{maxWidth: "260px"}} />
-                              <br></br>
-                              <h3 className="intro-slideshow-text">What is a Cashbox?
-                              </h3>
-                            </div>
-                            <div className="carousel-item">
-                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/2.PNG" alt="Second slide"/>
-                              <h3 className="intro-slideshow-text">Cash boxes are a perpetual buying counterparty pool to a specific tokenized asset. Think of it as an open buy order on a centralized exchange.
-                              </h3>
-                            </div>
-                            <div className="carousel-item">
-                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/3.PNG" alt="Third slide"/>
-                              <h3 className="intro-slideshow-text">What that means is if someone has an Asset token, they can always sell it to the cash box in return of a stable coin at a predefined price.
-                              </h3>
-                            </div>
-                            <div className="carousel-item">
-                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/4.PNG" alt="Fourth slide"/>
-                              <h3 className="intro-slideshow-text">Those who deposit stable coins in the pool become owners of the Asset tokens that are redeemed against the pool. Their ownership of the pool is represented by Cash Box tokens, aka Pool tokens.
-                              </h3>
-                            </div>
-                            <div className="carousel-item">
-                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/5.PNG" alt="Fifth slide"/>
-                              <h3 className="intro-slideshow-text">The pool tokens can be redeemed for the Asset tokens in the Cash box plus cash (if there are not enough Assets).
-                              </h3>
-                            </div>
-                            <div className="carousel-item">
-                              <br></br>
-                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/6.PNG" alt="Sixth slide"/>
-                              <h3 className="intro-slideshow-text">The Asset tokens can then be redeemed against real world shares or equivalents via the off-ramp partners.
-                              </h3>
-                            </div>
-                            <div className="carousel-item">
-                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/7.PNG" alt="Seventh slide" />
-                              <h3 className="intro-slideshow-text">The performance of the cash box tokens therefore are similar to the Asset tokens they act as counterparty to, providing a permissionless mechanism for exposure to the performance of real world assets.
-                              </h3>
-                            </div>
-                            <div className="carousel-item">
-                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/8.PNG" alt="Fifth slide"/>
-                              <h3 className="intro-slideshow-text">The cash box tokens also serve as a backstop for onchain liquidation of real world collateral.
-                              </h3>
-                            </div>
-                            <div className="carousel-item">
-                              <br></br>
-                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/9.PNG" alt="Sixth slide"/>
-                              <h3 className="intro-slideshow-text">As an additional incentive for providing this service, pool token holders can stake them and earn OPEN tokens as reward.
-                              </h3>
-                            </div>
-                            <a className="carousel-control-prev" href="#onboardingCarousel" role="button" data-slide="prev">
-                            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                          </a>
-                          <a className="carousel-control-next" href="#onboardingCarousel" role="button" data-slide="next">
-                            <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                          </a>
-                          </div>
-                        </div>
+              <div className="row my0 mx0">
+                <div
+                  className="col-lg-12 py0 px0"
+                  style={{ backgroundColor: "#FFFFFF", height: "480px" }}
+                >
+                  <div className="py20 px20 d-block">
+                    <button
+                      type="button"
+                      className="close"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div
+                    id="onboardingCarousel"
+                    className="carousel slide"
+                    data-interval="false"
+                  >
+                    <div className="carousel-inner">
+                      <div
+                        className="carousel-item active onboarding"
+                        style={{ padding: "2rem", paddingTop: "1rem" }}
+                      >
+                        <img
+                          className="d-block intro-slideshow-img mx-auto"
+                          src="images/onboarding/1.PNG"
+                          alt="First slide"
+                          style={{ maxWidth: "260px" }}
+                        />
+                        <br></br>
+                        <h3 className="intro-slideshow-text">
+                          What is a Cashbox?
+                        </h3>
+                      </div>
+                      <div className="carousel-item">
+                        <img
+                          className="d-block intro-slideshow-img mx-auto"
+                          src="images/onboarding/2.PNG"
+                          alt="Second slide"
+                        />
+                        <h3 className="intro-slideshow-text">
+                          Cash boxes are a perpetual buying counterparty pool to
+                          a specific tokenized asset. Think of it as an open buy
+                          order on a centralized exchange.
+                        </h3>
+                      </div>
+                      <div className="carousel-item">
+                        <img
+                          className="d-block intro-slideshow-img mx-auto"
+                          src="images/onboarding/3.PNG"
+                          alt="Third slide"
+                        />
+                        <h3 className="intro-slideshow-text">
+                          What that means is if someone has an Asset token, they
+                          can always sell it to the cash box in return of a
+                          stable coin at a predefined price.
+                        </h3>
+                      </div>
+                      <div className="carousel-item">
+                        <img
+                          className="d-block intro-slideshow-img mx-auto"
+                          src="images/onboarding/4.PNG"
+                          alt="Fourth slide"
+                        />
+                        <h3 className="intro-slideshow-text">
+                          Those who deposit stable coins in the pool become
+                          owners of the Asset tokens that are redeemed against
+                          the pool. Their ownership of the pool is represented
+                          by Cash Box tokens, aka Pool tokens.
+                        </h3>
+                      </div>
+                      <div className="carousel-item">
+                        <img
+                          className="d-block intro-slideshow-img mx-auto"
+                          src="images/onboarding/5.PNG"
+                          alt="Fifth slide"
+                        />
+                        <h3 className="intro-slideshow-text">
+                          The pool tokens can be redeemed for the Asset tokens
+                          in the Cash box plus cash (if there are not enough
+                          Assets).
+                        </h3>
+                      </div>
+                      <div className="carousel-item">
+                        <br></br>
+                        <img
+                          className="d-block intro-slideshow-img mx-auto"
+                          src="images/onboarding/6.PNG"
+                          alt="Sixth slide"
+                        />
+                        <h3 className="intro-slideshow-text">
+                          The Asset tokens can then be redeemed against real
+                          world shares or equivalents via the off-ramp partners.
+                        </h3>
+                      </div>
+                      <div className="carousel-item">
+                        <img
+                          className="d-block intro-slideshow-img mx-auto"
+                          src="images/onboarding/7.PNG"
+                          alt="Seventh slide"
+                        />
+                        <h3 className="intro-slideshow-text">
+                          The performance of the cash box tokens therefore are
+                          similar to the Asset tokens they act as counterparty
+                          to, providing a permissionless mechanism for exposure
+                          to the performance of real world assets.
+                        </h3>
+                      </div>
+                      <div className="carousel-item">
+                        <img
+                          className="d-block intro-slideshow-img mx-auto"
+                          src="images/onboarding/8.PNG"
+                          alt="Fifth slide"
+                        />
+                        <h3 className="intro-slideshow-text">
+                          The cash box tokens also serve as a backstop for
+                          onchain liquidation of real world collateral.
+                        </h3>
+                      </div>
+                      <div className="carousel-item">
+                        <br></br>
+                        <img
+                          className="d-block intro-slideshow-img mx-auto"
+                          src="images/onboarding/9.PNG"
+                          alt="Sixth slide"
+                        />
+                        <h3 className="intro-slideshow-text">
+                          As an additional incentive for providing this service,
+                          pool token holders can stake them and earn OPEN tokens
+                          as reward.
+                        </h3>
+                      </div>
+                      <a
+                        className="carousel-control-prev"
+                        href="#onboardingCarousel"
+                        role="button"
+                        data-slide="prev"
+                      >
+                        <span
+                          className="carousel-control-prev-icon"
+                          aria-hidden="true"
+                        ></span>
+                      </a>
+                      <a
+                        className="carousel-control-next"
+                        href="#onboardingCarousel"
+                        role="button"
+                        data-slide="next"
+                      >
+                        <span
+                          className="carousel-control-next-icon"
+                          aria-hidden="true"
+                        ></span>
+                      </a>
                     </div>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-</div>
-
+      </div>
     </div>
   );
 };

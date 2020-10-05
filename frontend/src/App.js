@@ -4,6 +4,7 @@ import Navbar from "./Navbar";
 // const EthereumTx = require("ethereumjs-tx").Transaction;
 import Body from "./Body";
 import ContractDetails from "./contractsDetails/ContractDetails.json";
+import MainContractDetails from "./contractsDetails/MainContractDetails.json";
 import ContractDeployment from "./ContractDeployment";
 import Admin from "./Admin";
 // import { BigInt } from "BigInt";
@@ -56,6 +57,8 @@ const App = () => {
   const [stocktocash, setstocktocash] = useState(0);
   const [contract, setContract] = useState({});
 
+  const [Stockliqidatoraddress, setStockliqidatoraddress] = useState("");
+
   const loadWeb3 = async () => {
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
@@ -80,7 +83,129 @@ const App = () => {
     setAccount(accounts[0]);
     const networkId = await web3.eth.net.getId();
 
-    if (networkId === 42) {
+    if (networkId === 1) {
+      const contract = new web3.eth.Contract(
+        MainContractDetails.stockLiquidatorABI
+      );
+      setContract(contract);
+
+      const Stock = new web3.eth.Contract(
+        MainContractDetails.stockLiquidatorABI,
+        MainContractDetails.MainstockLiquidatorAddress
+      );
+
+      const cashtoken = new web3.eth.Contract(
+        MainContractDetails.ERC20ABI,
+        MainContractDetails.MaincashAddress
+      );
+      setcashsc(cashtoken);
+      const stocktoken = new web3.eth.Contract(
+        MainContractDetails.ERC20ABI,
+        MainContractDetails.MainstockTokenAddress
+      );
+      setstocktokensc(stocktoken);
+      // const stockpooltoken = new web3.eth.Contract(
+      //   ContractDetails.ERC20ABI,
+      //   ContractDetails.stockPoolTokenAddress
+      // );
+      // setstockpooltokensc(stockpooltoken);
+      setstocksc(Stock);
+      setStockliqidatoraddress(MainContractDetails.MainstockLiquidatorAddress);
+
+      ///// have to add name ticker
+      let cashsymbol = await cashtoken.methods.symbol().call();
+      setCashSymbol(cashsymbol);
+      let cashDecimals = await Stock.methods.cashDecimals().call();
+      let stockDecimals = await stocktoken.methods.decimals().call();
+      setCashDecimals(cashDecimals);
+      setStockDecimals(stockDecimals);
+
+      const cashbalance = await cashtoken.methods.balanceOf(accounts[0]).call();
+      let cashbalanceupdate = await (cashbalance / 10 ** cashDecimals);
+
+      setmycashbalance(cashbalanceupdate);
+      const pooltokenbalance = await Stock.methods
+        .balanceOf(accounts[0])
+        .call();
+      let pooltokenbalanceupdate = await web3.utils.fromWei(pooltokenbalance);
+
+      setmypoolbalance(pooltokenbalanceupdate);
+
+      const stockbalance = await stocktoken.methods
+        .balanceOf(accounts[0])
+        .call();
+      let stockbalanceupdate = await (stockbalance / 10 ** stockDecimals);
+      setmystockbalance(stockbalanceupdate);
+
+      let cashvalauationcap = await Stock.methods.cashValauationCap().call();
+      let updatedonecashcap = await (cashvalauationcap / 10 ** cashDecimals);
+      setdcashValauationCap(updatedonecashcap);
+
+      let geturl = await Stock.methods.url().call();
+      seturll(geturl);
+      // await setdata({
+      //   url: geturl.toString(),
+      //   cashcap: cashvalauationcap,
+      // });
+
+      const poolTokenTotalSupply = await Stock.methods
+        .totalSupply()
+        .call()
+        .then(function (result) {
+          let updatedone = web3.utils.fromWei(result);
+          setpooltokenTotalSupply(updatedone);
+        });
+      const contractStockTokenBalance = await Stock.methods
+        .contractStockTokenBalance()
+        .call()
+        .then(function (result) {
+          let updatedone = result / 10 ** stockDecimals;
+          setcontractstockTokenBalance(updatedone);
+        });
+      const contractCashBalance = await Stock.methods
+        .contractCashBalance()
+        .call()
+        .then(function (result) {
+          let updatedone = result / 10 ** cashDecimals;
+          setcontractCashBalance(updatedone);
+        });
+      const contractCashValuation = await Stock.methods
+        .contractCashValuation()
+        .call()
+        .then(function (result) {
+          let updatedone = result / 10 ** cashDecimals;
+          setcontractCashValuation(updatedone);
+        });
+
+      const pooltocashupdate = Stock.methods
+        .poolToCashRate()
+        .call()
+        .then(function (result) {
+          setpooltocash(result);
+        });
+
+      const stocktocashupdate = Stock.methods
+        .stockToCashRate()
+        .call()
+        .then(async function (result) {
+          let updatedone = result / 10 ** cashDecimals;
+          setstocktocash(updatedone);
+        });
+
+      // console.log(geturl);
+      // console.log(poolTokenTotalSupply);
+      // console.log(contractStockTokenBalance);
+      // console.log(contractCashBalance);
+      // // console.log(stockTokenRate);
+      // console.log(StockTokenAddress);
+      // console.log(StockPoolTokenAddress);
+
+      // const a = await fetch("https://oracleprov.herokuapp.com/get")
+      //   .then((response) => response.json())
+      //   .then((data) => console.log(data));
+
+      setLoading(false);
+    } else if (networkId === 42) {
       const contract = new web3.eth.Contract(
         ContractDetails.stockLiquidatorABI
       );
@@ -107,7 +232,7 @@ const App = () => {
       // );
       // setstockpooltokensc(stockpooltoken);
       setstocksc(Stock);
-
+      setStockliqidatoraddress(ContractDetails.stockLiquidatorAddress);
       ///// have to add name ticker
       let cashsymbol = await cashtoken.methods.symbol().call();
       setCashSymbol(cashsymbol);
@@ -216,7 +341,7 @@ const App = () => {
     URl
   ) => {
     const web3 = window.web3;
-    let bytecode = ContractDetails.bytecode;
+    let bytecode = MainContractDetails.stockLiquidatorBytecode;
 
     const uppercapinwei = UppercapLimit * 10 ** cashDecimals;
     let payload = {
@@ -264,7 +389,7 @@ const App = () => {
     console.log(valueWei, b, c, d);
     valueWei = valueWei.toString();
     await stocktokensc.methods
-      .approve(ContractDetails.stockLiquidatorAddress, valueWei)
+      .approve(Stockliqidatoraddress, valueWei)
       .send({ from: account })
       .once("receipt", async (receipt) => {
         setLoading(false);
@@ -299,7 +424,7 @@ const App = () => {
     console.log(valueWei, b, c, d);
     valueWei = valueWei.toString();
     await cashsc.methods
-      .approve(ContractDetails.stockLiquidatorAddress, valueWei)
+      .approve(Stockliqidatoraddress, valueWei)
       .send({ from: account })
       .once("receipt", async (receipt) => {})
       .on("error", (error) => {
@@ -331,8 +456,9 @@ const App = () => {
     console.log(valueWei, b, c, d);
     valueWei = valueWei.toString();
     console.log(a);
+    console.log(Stockliqidatoraddress);
     await stocksc.methods
-      .approve(ContractDetails.stockLiquidatorAddress, valueWei)
+      .approve(Stockliqidatoraddress, valueWei)
       .send({ from: account })
       .once("receipt", async (receipt) => {})
       .on("error", (error) => {
