@@ -179,12 +179,44 @@ const Body = ({
   // if(cookies.get('first_visit_cashbox')) {
   //   showModal();
   // }
+  $('.carousel').carousel({
+    interval: false,
+  })
+
+  checkitem();
+
+  $('#onboardingCarousel').on('slid.bs.carousel', checkitem);
+
+  function checkitem()
+  {
+      var $this = $('#onboardingCarousel');
+      if ($('.carousel-inner .carousel-item:first').hasClass('active')) {
+          // Hide left arrow
+          $('.carousel-control-prev').hide();
+          // But show right arrow
+          $('.carousel-control-next').show();
+      } else if ($('.carousel-inner .carousel-item:last').hasClass('active')) {
+          // Hide right arrow
+          $('.carousel-control-next').hide();
+          // But show left arrow
+          $('.carousel-control-prev').show();
+      } else {
+          $('.carousel-control-prev, .carousel-control-next').show();
+      }
+  }
 
   return (
     <div className="container">
       <div className="row">
         <div className="col-md-8 offset-md-2 text-center">
           <div>
+            <div className="row">
+              <div className="col-md-12">
+                <h3>The AREIT CashBox</h3>
+                <br></br>
+                <p>Deploy to this CashBox to become an on-chain LP counterparty to the Australian Real Estate Investment Trust - A REIT which owns and manages Australian Commercial Real Estate. <br></br> LPs earn fees and can <a href="https://stake.opendao.io/" target="_blank" className="link">stake</a> to earn OPEN tokens. Not sure how CashBoxes work? Click <a href="#" className="link" onClick={showModal}>here</a>.</p>
+              </div>
+            </div>
             <div className="row mt-md-3">
               <div className="col-md-6">
                 <input
@@ -270,6 +302,10 @@ const Body = ({
                   <table className="table text-left width-lg">
                     <tbody>
                       <tr>
+                        <td>CashBox Description:</td>
+                        <td className="text-break">Perpetual Counterparty to Australian Real Estate Investment Trust Shares</td>
+                      </tr>
+                      <tr>
                         <td>{CashSymbol} in Cashbox:</td>
                         <td>{contractCashBalance}</td>
                       </tr>
@@ -290,7 +326,7 @@ const Body = ({
                           {" "}
                           {sellredeemvalue} {""}CashBox token gives:
                         </td>
-                        <td style={{ wordBreak: "break-word" }}>
+                        <td className="text-break">
                           {/* {Number(
                             contractCashValuation / pooltokenTotalSupply
                           ).toFixed(2)} */}
@@ -327,7 +363,7 @@ const Body = ({
                         </td>
                       </tr>
                       <tr>
-                        <td>URL:</td>
+                        <td>Asset Explorer:</td>
                         <td>
                           <span>
                             <a href={urlll} target="_blank" className="link">

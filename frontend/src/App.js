@@ -327,7 +327,7 @@ const App = () => {
 
       setLoading(false);
     } else {
-      window.alert("the contract not deployed to detected network.");
+      window.alert("The contract is not deployed to the detected network.");
       setloading2(true);
     }
   };
