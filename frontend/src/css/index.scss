@@ -67,3 +67,37 @@ $primary: #FA596B;
 .width-lg td {
   width: 62%;
 }
+
+// Onboarding Modal
+
+.carousel-control-next,
+.carousel-control-prev {
+    filter: invert(100%);
+}
+
+.carousel-fade .carousel-item {
+ opacity: 0;
+ transition-duration: 3.5s;
+ transition-property: opacity;
+}
+
+#onboardingCarousel {
+  position: relative;
+  padding: 2.6em;
+  margin: 1em;
+  padding-top: 2.5em;
+  background: #fff;
+  border-radius: 16px;
+  color: #333;
+}
+
+#onboardingCarousel img {
+  max-height: 260px;
+}
+
+.intro-slideshow-text {
+  text-align: center;
+  margin: auto;
+  font-size: 1.4em;
+  margin-top: 1em;
+}

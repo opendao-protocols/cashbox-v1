@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "./css/body.css";
 import "./css/index.scss";
 import swal from "sweetalert";
+import $ from "jquery";
+import Cookies from 'universal-cookie';
 
 const Body = ({
   redeemStockToken,
@@ -72,7 +74,7 @@ const Body = ({
     if (parseFloat(sellredeemvalue) > xy) {
       y = z - x * parseFloat(stocktocash);
       swal(
-        "You should recieve " +
+        "You should receive " +
           x.toString() +
           " " +
           " Asset Token" +
@@ -91,13 +93,15 @@ const Body = ({
   };
 
   const onsubmitminttoken = () => {
-    let marketCap = (
+    let marketCap = parseFloat(
       pooltokenTotalSupply *
       (contractCashValuation / pooltokenTotalSupply)
-    ).toFixed(2);
-    if (marketCap >= dcashValauationCap) {
+    );
+    let totalValue = parseFloat(marketCap)+parseFloat(sellmintvalue);
+    if (totalValue >= dcashValauationCap) {
       swal("CashBox is full, no more deposits!");
-    } else {
+    }
+    else {
       swal(
         "You will receive " +
           sellmintvalue.toString() +
@@ -113,7 +117,11 @@ const Body = ({
   const onsubmitsellstock = () => {
     let x = parseFloat(sellstockvalue) * parseFloat(stocktocash);
 
-    swal(
+    if(contractCashBalance < x ) {
+      swal("Not enough DAI in CashBox")
+    }
+    else {
+      swal(
       "You will receive " +
         x.toString() +
         " " +
@@ -121,7 +129,8 @@ const Body = ({
         " for " +
         sellstockvalue.toString() +
         " Asset Token"
-    );
+      );
+    }
     console.log(sellstockvalue.toString());
 
     redeemStockToken(sellstockvalue.toString());
@@ -141,26 +150,46 @@ const Body = ({
   const onsubmitchangeowner = () => {
     changeOwner(owner.toString());
   };
+
+  const showModal = () => {
+    $('#previewModal').modal('show');
+  };
+
+  // const cookies = new Cookies();
+  // let cookieExists = cookies.get('first_visit_cashbox');
+  // console.log(cookies.get('first_visit_cashbox'));
+  // if(!cookieExists) {
+  //   showModal();
+  //   console.log(cookies.get('first_visit_cashbox'));
+  // }
+  // cookies.set('first_visit_cashbox', 'True', { path: '/' });
+
+  // cookies.set('first_visit_cashbox', 'True', { path: '/' });
+  // console.log(cookies.get('first_visit_cashbox'));
+  // if(cookies.get('first_visit_cashbox')) {
+  //   showModal();
+  // }
+  
   return (
     <div className="container">
-      <div class="row">
-        <div class="col-md-8 offset-md-2 text-center">
+      <div className="row">
+        <div className="col-md-8 offset-md-2 text-center">
           <div>
             <div className="row mt-md-3">
-              <div class="col-md-6">
+              <div className="col-md-6">
                 <input
                   id="inputvalue"
                   type="text"
                   name="sellmintvalue"
                   value={sellmintvalue}
                   onChange={onchangemintvalue}
-                  class="form-control"
+                  className="form-control"
                   required
                 />
               </div>
-              <div class="col-md-6">
+              <div className="col-md-6">
                 <button
-                  class="btn btn-main btn-block"
+                  className="btn btn-main btn-block"
                   onClick={onsubmitminttoken}
                 >
                   Deposit {CashSymbol} and get CashBox tokens
@@ -170,43 +199,20 @@ const Body = ({
             <br></br>
 
             <div className="row">
-              <div class="col-md-6">
-                <input
-                  id="inputvalue"
-                  type="text"
-                  name="sellstockvalue"
-                  value={sellstockvalue}
-                  onChange={onchangestockvalue}
-                  class="form-control"
-                  required
-                />
-              </div>
-              <div class="col-md-6">
-                <button
-                  class="btn btn-main btn-block"
-                  onClick={onsubmitsellstock}
-                >
-                  Sell Asset tokens to get {CashSymbol}
-                </button>
-              </div>
-            </div>
-            <br></br>
-
-            <div className="row">
-              <div class="col-md-6">
+              <div className="col-md-6">
                 <input
                   id="inputvalue"
                   type="text"
                   name="sellredeemvalue"
                   value={sellredeemvalue}
                   onChange={onchangeredeemvalue}
-                  class="form-control"
+                  className="form-control"
                   required
                 />
               </div>
-              <div class="col-md-6">
+              <div className="col-md-6">
                 <button
-                  class="btn btn-main btn-block"
+                  className="btn btn-main btn-block"
                   onClick={onsubmitredeemtoken}
                 >
                   Redeem CashBox tokens for Asset tokens
@@ -214,7 +220,31 @@ const Body = ({
               </div>
             </div>
             <br></br>
+
+            <div className="row">
+              <div className="col-md-6">
+                <input
+                  id="inputvalue"
+                  type="text"
+                  name="sellstockvalue"
+                  value={sellstockvalue}
+                  onChange={onchangestockvalue}
+                  className="form-control"
+                  required
+                />
+              </div>
+              <div className="col-md-6">
+                <button
+                  className="btn btn-main btn-block"
+                  onClick={onsubmitsellstock}
+                >
+                  Sell Asset tokens to get {CashSymbol}
+                </button>
+              </div>
+            </div>
             <br></br>
+            <br></br>
+
           </div>
         </div>
       </div>
@@ -251,12 +281,12 @@ const Body = ({
                           {" "}
                           {sellredeemvalue} {""}CashBox token gives:
                         </td>
-                        <td>
+                        <td style={{ wordBreak: "break-word" }}>
                           {/* {Number(
                             contractCashValuation / pooltokenTotalSupply
                           ).toFixed(2)} */}
                           {sellredeemvalue === ""
-                            ? "You will receive " + 0 + " Asset Token"
+                            ? "You will receive _____ Asset Token"
                             : parseFloat(sellredeemvalue) >
                               parseFloat(contractstockTokenBalance) *
                                 parseFloat(stocktocash)
@@ -291,7 +321,7 @@ const Body = ({
                         <td>URL:</td>
                         <td>
                           <span>
-                            <a href={urlll} target="_blank" class="link">
+                            <a href={urlll} target="_blank" className="link">
                               {urlll}
                             </a>
                           </span>
@@ -303,11 +333,11 @@ const Body = ({
               </div>
             </div>
 
-            <div class="col-md-6">
-              <div class="row">
-                <div class="col-md-10 offset-md-1 section">
-                  <h3 class="section-heading">YOUR BALANCES</h3>
-                  <table class="table text-left width-lg">
+            <div className="col-md-6">
+              <div className="row">
+                <div className="col-md-10 offset-md-1 section">
+                  <h3 className="section-heading">YOUR BALANCES</h3>
+                  <table className="table text-left width-lg">
                     <tbody>
                       <tr>
                         <td>Asset token in your wallet:</td>
@@ -328,22 +358,23 @@ const Body = ({
 
               <br></br>
               <br></br>
+              <br></br>
 
-              <div class="row">
-                <div class="col-md-10 offset-md-1 section">
-                  <h3 class="section-heading">CONTRACT ADDRESSES</h3>
-                  <table class="table text-left">
+              <div className="row">
+                <div className="col-md-10 offset-md-1 section">
+                  <h3 className="section-heading">CONTRACT ADDRESSES</h3>
+                  <table className="table text-left">
                     <tbody>
                       <tr>
                         <td>{CashSymbol} Address:</td>
                         <td>0x58eCf1a6B2af462E69765261e15536ddef8A8C41</td>
                       </tr>
                       <tr>
-                        <td class="text-break">Pool Token Address: </td>
+                        <td className="text-break">Pool Token Address: </td>
                         <td>0x9312b558cA3659909a38C27802bB46C5AC541552</td>
                       </tr>
                       <tr>
-                        <td class="text-break">Asset Token Address:</td>
+                        <td className="text-break">Asset Token Address:</td>
                         <td>0x1e615aF65Ab0183A0CEbAa4Dc709e8a030F4a5E9</td>
                       </tr>
                     </tbody>
@@ -357,6 +388,84 @@ const Body = ({
 
       <br></br>
       <br></br>
+
+      <div  className="modal" id="previewModal" role="dialog"
+    aria-hidden="true">
+    <div className="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div className="modal-content" style={{backgroundColor: "#FFFFFF"}}>
+            <div className="modal-body py0 px0">
+                <div className="row my0 mx0">
+                    <div className="col-lg-12 py0 px0" style={{backgroundColor: "#FFFFFF", height: "480px"}}>
+                        <div className="py20 px20 d-block">
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div id="onboardingCarousel" className="carousel slide" data-interval="false">
+                          <div className="carousel-inner">                         
+                            <div className="carousel-item active onboarding" style={{padding: "2rem", paddingTop: "1rem"}}>
+                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/1.PNG" alt="First slide" style={{maxWidth: "260px"}} />
+                              <br></br>
+                              <h3 className="intro-slideshow-text">What is a Cashbox?
+                              </h3>
+                            </div>
+                            <div className="carousel-item">
+                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/2.PNG" alt="Second slide"/>
+                              <h3 className="intro-slideshow-text">Cash boxes are a perpetual buying counterparty pool to a specific tokenized asset. Think of it as an open buy order on a centralized exchange.
+                              </h3>
+                            </div>
+                            <div className="carousel-item">
+                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/3.PNG" alt="Third slide"/>
+                              <h3 className="intro-slideshow-text">What that means is if someone has an Asset token, they can always sell it to the cash box in return of a stable coin at a predefined price.
+                              </h3>
+                            </div>
+                            <div className="carousel-item">
+                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/4.PNG" alt="Fourth slide"/>
+                              <h3 className="intro-slideshow-text">Those who deposit stable coins in the pool become owners of the Asset tokens that are redeemed against the pool. Their ownership of the pool is represented by Cash Box tokens, aka Pool tokens.
+                              </h3>
+                            </div>
+                            <div className="carousel-item">
+                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/5.PNG" alt="Fifth slide"/>
+                              <h3 className="intro-slideshow-text">The pool tokens can be redeemed for the Asset tokens in the Cash box plus cash (if there are not enough Assets).
+                              </h3>
+                            </div>
+                            <div className="carousel-item">
+                              <br></br>
+                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/6.PNG" alt="Sixth slide"/>
+                              <h3 className="intro-slideshow-text">The Asset tokens can then be redeemed against real world shares or equivalents via the off-ramp partners.
+                              </h3>
+                            </div>
+                            <div className="carousel-item">
+                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/7.PNG" alt="Seventh slide" />
+                              <h3 className="intro-slideshow-text">The performance of the cash box tokens therefore are similar to the Asset tokens they act as counterparty to, providing a permissionless mechanism for exposure to the performance of real world assets.
+                              </h3>
+                            </div>
+                            <div className="carousel-item">
+                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/8.PNG" alt="Fifth slide"/>
+                              <h3 className="intro-slideshow-text">The cash box tokens also serve as a backstop for onchain liquidation of real world collateral.
+                              </h3>
+                            </div>
+                            <div className="carousel-item">
+                              <br></br>
+                              <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/9.PNG" alt="Sixth slide"/>
+                              <h3 className="intro-slideshow-text">As an additional incentive for providing this service, pool token holders can stake them and earn OPEN tokens as reward.
+                              </h3>
+                            </div>
+                            <a className="carousel-control-prev" href="#onboardingCarousel" role="button" data-slide="prev">
+                            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                          </a>
+                          <a className="carousel-control-next" href="#onboardingCarousel" role="button" data-slide="next">
+                            <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                          </a>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
     </div>
   );
 };
