@@ -7,6 +7,10 @@ import Cookies from "universal-cookie";
 import Switch from "react-bootstrap/esm/Switch";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Web3 from "web3";
+import ContractDetails from "./contractsDetails/ContractDetails.json";
+import MainContractDetails from "./contractsDetails/MainContractDetails.json";
+
 
 const Body = ({
   redeemStockToken,
@@ -110,7 +114,7 @@ const Body = ({
       pooltokenTotalSupply * (contractCashValuation / pooltokenTotalSupply)
     );
     let totalValue = parseFloat(marketCap) + parseFloat(sellmintvalue);
-    if (totalValue >= dcashValauationCap) {
+    if (totalValue > dcashValauationCap) {
       swal("CashBox is full, no more deposits!");
     } else {
       swal(
@@ -129,7 +133,7 @@ const Body = ({
     let x = parseFloat(sellstockvalue) * parseFloat(stocktocash);
 
     if (contractCashBalance < x) {
-      swal("Not enough DAI in CashBox");
+      swal("CashBox does not have enough liquidity, please reduce amount for redemption and try again");
     } else {
       swal(
         "You will receive " +
@@ -160,6 +164,40 @@ const Body = ({
   const onsubmitchangeowner = () => {
     changeOwner(owner.toString());
   };
+
+  // const getNetworkDetails = async () => {
+  //   const web3 = window.web3;
+  //   const networkId = await web3.eth.net.getId();
+  //   let networkName;
+  //   if (networkId === 1) {
+  //     networkName = "Main Net";
+  //   } else if (networkId === 42) {
+  //     networkName = "Kovan";
+  //   } else {
+  //     networkName = "Unknown";
+  //   }
+  //   return networkName;
+  // };
+  // getNetworkDetails();
+  // console.log(getNetworkDetails());
+
+
+// var contractAddress;
+//   const getContractAddresses = async () => {
+//     const web3 = window.web3;
+//     const networkId = await web3.eth.net.getId();
+//     let contractAddresses = [];
+//     if (networkId === 1) {
+//       this.contractAddress = 1;
+//     } else if (networkId === 42) {
+//       this.contractAddress = 42;
+//     } else {
+//       contractAddress = "Contracts are not deployed on this network. Please switch to Main net or Kovan to interact with the cashbox";
+//     }
+//     return contractAddresses;
+//   };
+//   alert(contractAddress);
+
 
   const showModal = () => {
     $("#previewModal").modal("show");
@@ -412,15 +450,15 @@ const Body = ({
                     <tbody>
                       <tr>
                         <td>{CashSymbol} Address:</td>
-                        <td>0x58eCf1a6B2af462E69765261e15536ddef8A8C41</td>
+                        <td><a href={'https://etherscan.io/address/' + MainContractDetails.MaincashAddress} className="link" target="_blank">{MainContractDetails.MaincashAddress}</a></td>
                       </tr>
                       <tr>
                         <td className="text-break">Pool Token Address: </td>
-                        <td>0x9312b558cA3659909a38C27802bB46C5AC541552</td>
+                        <td><a href={'https://etherscan.io/address/' + MainContractDetails.MainstockLiquidatorAddress} className="link" target="_blank">{MainContractDetails.MainstockLiquidatorAddress}</a></td>
                       </tr>
                       <tr>
                         <td className="text-break">Asset Token Address:</td>
-                        <td>0x1e615aF65Ab0183A0CEbAa4Dc709e8a030F4a5E9</td>
+                        <td><a href={'https://etherscan.io/address/' + MainContractDetails.MainstockTokenAddress} className="link" target="_blank">{MainContractDetails.MainstockTokenAddress}</a></td>
                       </tr>
                     </tbody>
                   </table>

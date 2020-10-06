@@ -23,7 +23,6 @@ const App = () => {
     loadWeb3();
     loadBlockchainData();
 
-    //esl
   }, []);
   let content;
   const [loading2, setloading2] = useState(false);

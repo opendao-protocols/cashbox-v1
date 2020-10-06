@@ -1,6 +1,8 @@
 import React from "react";
 import $ from "jquery";
 import 'bootstrap';
+import Web3 from "web3";
+
 
 const trucateAddress = (address) => {
   if (address === null || address === undefined) { return; }
@@ -13,6 +15,36 @@ const trucateAddress = (address) => {
  const showModal = () => {
     $('#previewModal').modal('show');
   };
+
+  // const loadWeb3 = async () => {
+  //   if (window.ethereum) {
+  //     window.web3 = new Web3(window.ethereum);
+  //     await window.ethereum.enable();
+  //   } else if (window.web3) {
+  //     window.web3 = new Web3(window.web3.currentProvider);
+  //   } else {
+  //     window.alert(
+  //       "Non-Ethereum browser detected. You should consider trying MetaMask!"
+  //     );
+  //   }
+  // };
+  // loadWeb3();
+
+  // const getNetworkDetails = async () => {
+  //   const web3 = window.web3;
+  //   // console.log(web3);
+  //   const networkId = await web3.eth.net.getId();
+  //   let networkName;
+  //   if (networkId === 1) {
+  //     networkName = "Main Net";
+  //   } else if (networkId === 42) {
+  //     networkName = "Kovan";
+  //   } else {
+  //     networkName = "Unknown";
+  //   }
+  //   return networkName;
+  // };
+  // console.log(getNetworkDetails());
 
 const Navbar = (props) => {
   return (
@@ -31,7 +63,7 @@ const Navbar = (props) => {
         <a href="#" onClick={showModal}>
         <li className="nav-item text-white">
           <div className="asset btn btn-grey-box">
-            <span>HELP</span>
+            <span>HELP </span>
           </div>
         </li>
         </a>
