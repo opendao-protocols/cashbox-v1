@@ -4,7 +4,7 @@ import "./css/index.scss";
 import swal from "sweetalert";
 import $ from "jquery";
 import Cookies from "universal-cookie";
-import Switch from "react-bootstrap/esm/Switch";
+import Switch from "@material-ui/core/Switch";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
@@ -27,7 +27,18 @@ const Body = ({
   dcashValauationCap,
   urlll,
   CashSymbol,
+  InfiniteApprovalCash,
+  InfiniteApprovalStock,
+  stockliquidatorCashallowance,
+  stockliquidatorStockallowance,
+  InfiniteApprovalStockLiquidator,
+  stockliquidatorallowance,
+  decimalexactvalue,
+  Stockliqidatoraddress,
+  AssetTokenaddress,
+  TokenAddress,
 }) => {
+  console.log(Stockliqidatoraddress, AssetTokenaddress, TokenAddress);
   const [sellstockvalue, setsellstockvalue] = useState("");
   const [sellmintvalue, setsellmintvalue] = useState("");
   const [sellredeemvalue, setsellredeemvalue] = useState("");
@@ -43,13 +54,39 @@ const Body = ({
   );
   // console.log(data);
 
-  const [state, setState] = React.useState({
-    checkedA: true,
-    checkedB: true,
-  });
+  // const [checkedA, setcheckedA] = useState(false);
 
-  const handleChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.checked });
+  const CashInfiniteAllowancehandleChange = (event) => {
+    // setcheckedA(event.target.checked);
+    console.log(stockliquidatorCashallowance);
+    if (
+      event.target.checked == true &&
+      parseInt(stockliquidatorCashallowance) <= 0
+    ) {
+      InfiniteApprovalCash();
+    }
+  };
+
+  const StockInfiniteAllowancehandleChange = (event) => {
+    // setcheckedA(event.target.checked);
+    console.log(stockliquidatorStockallowance);
+    if (
+      event.target.checked == true &&
+      parseInt(stockliquidatorStockallowance) <= 0
+    ) {
+      InfiniteApprovalStock();
+    }
+  };
+
+  const stockliquidatorInfiniteAllowancehandleChange = (event) => {
+    // setcheckedA(event.target.checked);
+    console.log(stockliquidatorallowance);
+    if (
+      event.target.checked == true &&
+      parseInt(stockliquidatorallowance) <= 0
+    ) {
+      InfiniteApprovalStockLiquidator();
+    }
   };
 
   const onchangestockvalue = (e) => {
@@ -84,6 +121,10 @@ const Body = ({
     let y;
     let xy = parseFloat(contractstockTokenBalance) * parseFloat(stocktocash);
 
+    if (isNaN(parseInt(sellredeemvalue))) {
+      swal("please enter something to perform this function");
+      return;
+    }
     if (parseFloat(sellredeemvalue) > xy) {
       y = z - x * parseFloat(stocktocash);
       swal(
@@ -101,14 +142,22 @@ const Body = ({
 
       swal("You will receive " + y.toString() + " Asset Token");
     }
-
-    burnPoolToken(sellredeemvalue.toString());
+    try {
+      burnPoolToken(sellredeemvalue.toString());
+    } catch (e) {
+      swal("please enter something to perform this function");
+    }
   };
 
   const onsubmitminttoken = () => {
     let marketCap = parseFloat(
       pooltokenTotalSupply * (contractCashValuation / pooltokenTotalSupply)
     );
+    // console.log(parseInt(sellmintvalue));
+    if (isNaN(parseInt(sellmintvalue))) {
+      swal("please enter something to perform this function");
+      return;
+    }
     let totalValue = parseFloat(marketCap) + parseFloat(sellmintvalue);
     if (totalValue >= dcashValauationCap) {
       swal("CashBox is full, no more deposits!");
@@ -121,15 +170,24 @@ const Body = ({
           " DAI"
       );
     }
-
-    mintPoolToken(sellmintvalue.toString());
+    try {
+      mintPoolToken(sellmintvalue.toString());
+    } catch (e) {
+      swal("please enter something to perform this function");
+    }
   };
 
   const onsubmitsellstock = () => {
     let x = parseFloat(sellstockvalue) * parseFloat(stocktocash);
 
+    if (isNaN(parseInt(sellstockvalue))) {
+      swal("please enter something to perform this function");
+      return;
+    }
     if (contractCashBalance < x) {
-      swal("Not enough DAI in CashBox");
+      swal(
+        "CashBox does not have enough liquidity, please reduce amount for redemption and try again"
+      );
     } else {
       swal(
         "You will receive " +
@@ -179,12 +237,57 @@ const Body = ({
   // if(cookies.get('first_visit_cashbox')) {
   //   showModal();
   // }
+  $(".carousel").carousel({
+    interval: false,
+  });
+  checkitem();
+  $("#onboardingCarousel").on("slid.bs.carousel", checkitem);
+  function checkitem() {
+    var $this = $("#onboardingCarousel");
+    if ($(".carousel-inner .carousel-item:first").hasClass("active")) {
+      // Hide left arrow
+      $(".carousel-control-prev").hide();
+      // But show right arrow
+      $(".carousel-control-next").show();
+    } else if ($(".carousel-inner .carousel-item:last").hasClass("active")) {
+      // Hide right arrow
+      $(".carousel-control-next").hide();
+      // But show left arrow
+      $(".carousel-control-prev").show();
+    } else {
+      $(".carousel-control-prev, .carousel-control-next").show();
+    }
+  }
 
   return (
     <div className="container">
       <div className="row">
         <div className="col-md-8 offset-md-2 text-center">
           <div>
+            <div className="row">
+              <div className="col-md-12">
+                <h3>The AREIT CashBox</h3>
+                <br></br>
+                <p>
+                  Deploy to this CashBox to become an on-chain LP counterparty
+                  to the Australian Real Estate Investment Trust - A REIT which
+                  owns and manages Australian Commercial Real Estate. <br></br>{" "}
+                  LPs earn fees and can{" "}
+                  <a
+                    href="https://stake.opendao.io/"
+                    target="_blank"
+                    className="link"
+                  >
+                    stake
+                  </a>{" "}
+                  to earn OPEN tokens. Not sure how CashBoxes work? Click{" "}
+                  <a href="#" className="link" onClick={showModal}>
+                    here
+                  </a>
+                  .
+                </p>
+              </div>
+            </div>
             <div className="row mt-md-3">
               <div className="col-md-6">
                 <input
@@ -219,7 +322,7 @@ const Body = ({
                   className="form-control"
                   required
                 />
-              </div>
+              </div>{" "}
               <div className="col-md-6">
                 <button
                   className="btn btn-main btn-block"
@@ -254,6 +357,72 @@ const Body = ({
             </div>
             <br></br>
             <br></br>
+            <div style={{ backgroundColor: "#ffffff" }}>
+              <span style={{ color: "black" }}>Cash Infinite Allowance</span>
+              {parseInt(stockliquidatorCashallowance) <=
+              parseInt(decimalexactvalue) ? (
+                // parseInt(sellredeemvalue) +
+                //   parseInt(sellmintvalue) +
+                //   parseInt(sellstockvalue)
+
+                <Switch
+                  // checked={checkedA}
+                  onChange={CashInfiniteAllowancehandleChange}
+                  name="checkedA"
+                  inputProps={{ "aria-label": "secondary checkbox" }}
+                />
+              ) : (
+                <Switch
+                  disabled
+                  checked
+                  inputProps={{ "aria-label": "primary checkbox" }}
+                />
+              )}
+
+              <span style={{ color: "black" }}>Stock Infinite Allowance</span>
+              {parseInt(stockliquidatorStockallowance) <=
+              parseInt(decimalexactvalue) ? (
+                // parseInt(sellredeemvalue) +
+                //   parseInt(sellmintvalue) +
+                //   parseInt(sellstockvalue)
+
+                <Switch
+                  // checked={checkedA}
+                  onChange={StockInfiniteAllowancehandleChange}
+                  name="checkedA"
+                  inputProps={{ "aria-label": "secondary checkbox" }}
+                />
+              ) : (
+                <Switch
+                  disabled
+                  checked
+                  inputProps={{ "aria-label": "primary checkbox" }}
+                />
+              )}
+
+              {/* <span style={{ color: "black" }}>
+                Stock liquidator Infinite Allowance
+              </span>
+              {parseInt(stockliquidatorallowance) <=
+              parseInt(decimalexactvalue) ? (
+                // parseInt(sellredeemvalue) +
+                //   parseInt(sellmintvalue) +
+                //   parseInt(sellstockvalue)
+
+                <Switch
+                  // checked={checkedA}
+                  onChange={stockliquidatorInfiniteAllowancehandleChange}
+                  name="checkedA"
+                  inputProps={{ "aria-label": "secondary checkbox" }}
+                />
+              ) : (
+                <Switch
+                  disabled
+                  checked
+                  inputProps={{ "aria-label": "primary checkbox" }}
+                />
+              )} */}
+            </div>
           </div>
         </div>
       </div>
@@ -269,6 +438,13 @@ const Body = ({
                   <h3 className="section-heading">STATISTICS</h3>
                   <table className="table text-left width-lg">
                     <tbody>
+                      <tr>
+                        <td>CashBox Description:</td>
+                        <td className="text-break">
+                          Perpetual Counterparty to Australian Real Estate
+                          Investment Trust Shares
+                        </td>
+                      </tr>
                       <tr>
                         <td>{CashSymbol} in Cashbox:</td>
                         <td>{contractCashBalance}</td>
@@ -290,7 +466,7 @@ const Body = ({
                           {" "}
                           {sellredeemvalue} {""}CashBox token gives:
                         </td>
-                        <td style={{ wordBreak: "break-word" }}>
+                        <td className="text-break">
                           {/* {Number(
                             contractCashValuation / pooltokenTotalSupply
                           ).toFixed(2)} */}
@@ -327,7 +503,7 @@ const Body = ({
                         </td>
                       </tr>
                       <tr>
-                        <td>URL:</td>
+                        <td>Asset Explorer:</td>
                         <td>
                           <span>
                             <a href={urlll} target="_blank" className="link">
@@ -376,15 +552,15 @@ const Body = ({
                     <tbody>
                       <tr>
                         <td>{CashSymbol} Address:</td>
-                        <td>0x58eCf1a6B2af462E69765261e15536ddef8A8C41</td>
+                        <td>{TokenAddress}</td>
                       </tr>
                       <tr>
                         <td className="text-break">Pool Token Address: </td>
-                        <td>0x9312b558cA3659909a38C27802bB46C5AC541552</td>
+                        <td>{Stockliqidatoraddress}</td>
                       </tr>
                       <tr>
                         <td className="text-break">Asset Token Address:</td>
-                        <td>0x1e615aF65Ab0183A0CEbAa4Dc709e8a030F4a5E9</td>
+                        <td>{AssetTokenaddress}</td>
                       </tr>
                     </tbody>
                   </table>

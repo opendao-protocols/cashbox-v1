@@ -19,13 +19,10 @@ import {
 } from "react-router-dom";
 
 const App = () => {
-  useEffect(() => {
-    loadWeb3();
-    loadBlockchainData();
+  const [refresh, setrefresh] = useState(0);
 
-    //esl
-  }, []);
   let content;
+
   const [loading2, setloading2] = useState(false);
 
   const [account, setAccount] = useState("");
@@ -58,28 +55,61 @@ const App = () => {
   const [contract, setContract] = useState({});
 
   const [Stockliqidatoraddress, setStockliqidatoraddress] = useState("");
+  const [AssetTokenaddress, setAssetTokenaddress] = useState("");
+  const [TokenAddress, setTokenAdress] = useState("");
+  const [
+    stockliquidatorCashallowance,
+    setstockliquidatorCashallowance,
+  ] = useState("");
+
+  const [
+    stockliquidatorStockallowance,
+    setstockliquidatorStockallowance,
+  ] = useState("");
+
+  const [decimalexactvalue, setdecimalexactvalue] = useState("");
+
+  const [stockliquidatorallowance, setstockliquidatorallowance] = useState("");
 
   const loadWeb3 = async () => {
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
-      await window.ethereum.enable();
-    } else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider);
-    } else {
-      window.alert(
-        "Non-Ethereum browser detected. You should consider trying MetaMask!"
-      );
+    try {
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+        await window.ethereum.enable();
+      } else if (window.web3) {
+        window.web3 = new Web3(window.web3.currentProvider);
+      } else {
+        window.alert(
+          "Non-Ethereum browser detected. You should consider trying MetaMask!"
+        );
+
+        setLoading(true);
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
 
   const loadBlockchainData = async () => {
     setLoading(true);
+    if (
+      typeof window.ethereum == "undefined" ||
+      typeof window.web3 == "undefined"
+    ) {
+      return;
+    }
     const web3 = window.web3;
 
     let url = window.location.href;
     console.log(url);
 
     const accounts = await web3.eth.getAccounts();
+    console.log(accounts.length);
+
+    if (accounts.length == 0) {
+      return;
+    }
+
     setAccount(accounts[0]);
     const networkId = await web3.eth.net.getId();
 
@@ -93,16 +123,36 @@ const App = () => {
         MainContractDetails.stockLiquidatorABI,
         MainContractDetails.MainstockLiquidatorAddress
       );
+      const allowances = await Stock.methods
+        .allowance(accounts[0], MainContractDetails.MainstockLiquidatorAddress)
+        .call()
+        .then((result) => {
+          console.log(result + " stock liqui allowances");
+          setstockliquidatorallowance(result);
+        });
 
       const cashtoken = new web3.eth.Contract(
         MainContractDetails.ERC20ABI,
         MainContractDetails.MaincashAddress
       );
+      const cashallowances = await cashtoken.methods
+        .allowance(accounts[0], MainContractDetails.MainstockLiquidatorAddress)
+        .call()
+        .then((result) => {
+          setstockliquidatorCashallowance(result);
+        });
+
       setcashsc(cashtoken);
       const stocktoken = new web3.eth.Contract(
         MainContractDetails.ERC20ABI,
         MainContractDetails.MainstockTokenAddress
       );
+      const stockallowances = await stocktoken.methods
+        .allowance(accounts[0], MainContractDetails.MainstockLiquidatorAddress)
+        .call()
+        .then((result) => {
+          setstockliquidatorStockallowance(result);
+        });
       setstocktokensc(stocktoken);
       // const stockpooltoken = new web3.eth.Contract(
       //   ContractDetails.ERC20ABI,
@@ -110,7 +160,10 @@ const App = () => {
       // );
       // setstockpooltokensc(stockpooltoken);
       setstocksc(Stock);
+
       setStockliqidatoraddress(MainContractDetails.MainstockLiquidatorAddress);
+      setAssetTokenaddress(MainContractDetails.MainstockTokenAddress);
+      setTokenAdress(MainContractDetails.MaincashAddress);
 
       ///// have to add name ticker
       let cashsymbol = await cashtoken.methods.symbol().call();
@@ -191,7 +244,19 @@ const App = () => {
           let updatedone = result / 10 ** cashDecimals;
           setstocktocash(updatedone);
         });
+      var a = "5000";
+      let valueWei = window.web3.utils.toWei(a).toString();
 
+      var b = parseInt(cashDecimals);
+      let c, d;
+      if (b < 18) {
+        d = 18 - b;
+        d = 10 ** d;
+        valueWei = parseInt(valueWei) / d;
+      }
+      valueWei = valueWei.toString();
+      console.log(valueWei);
+      setdecimalexactvalue(valueWei);
       // console.log(geturl);
       // console.log(poolTokenTotalSupply);
       // console.log(contractStockTokenBalance);
@@ -216,15 +281,38 @@ const App = () => {
         ContractDetails.stockLiquidatorAddress
       );
 
+      const allowances = await Stock.methods
+        .allowance(accounts[0], ContractDetails.stockLiquidatorAddress)
+        .call()
+        .then((result) => {
+          console.log("cash result " + result);
+          setstockliquidatorallowance(result);
+        });
+
       const cashtoken = new web3.eth.Contract(
         ContractDetails.ERC20ABI,
         ContractDetails.cashAddress
       );
+      const cashallowances = await cashtoken.methods
+        .allowance(accounts[0], ContractDetails.stockLiquidatorAddress)
+        .call()
+        .then((result) => {
+          console.log("cash result " + result);
+          setstockliquidatorCashallowance(result);
+        });
       setcashsc(cashtoken);
       const stocktoken = new web3.eth.Contract(
         ContractDetails.ERC20ABI,
         ContractDetails.stockTokenAddress
       );
+      const stockallowances = await stocktoken.methods
+        .allowance(accounts[0], ContractDetails.stockLiquidatorAddress)
+        .call()
+        .then((result) => {
+          console.log("stock result " + result);
+          setstockliquidatorStockallowance(result);
+        });
+
       setstocktokensc(stocktoken);
       // const stockpooltoken = new web3.eth.Contract(
       //   ContractDetails.ERC20ABI,
@@ -233,6 +321,9 @@ const App = () => {
       // setstockpooltokensc(stockpooltoken);
       setstocksc(Stock);
       setStockliqidatoraddress(ContractDetails.stockLiquidatorAddress);
+      setAssetTokenaddress(ContractDetails.stockTokenAddress);
+      setTokenAdress(ContractDetails.cashAddress);
+
       ///// have to add name ticker
       let cashsymbol = await cashtoken.methods.symbol().call();
       setCashSymbol(cashsymbol);
@@ -312,6 +403,19 @@ const App = () => {
           let updatedone = result / 10 ** cashDecimals;
           setstocktocash(updatedone);
         });
+      var a = "5000";
+      let valueWei = window.web3.utils.toWei(a).toString();
+
+      var b = parseInt(cashDecimals);
+      let c, d;
+      if (b < 18) {
+        d = 18 - b;
+        d = 10 ** d;
+        valueWei = parseInt(valueWei) / d;
+      }
+      valueWei = valueWei.toString();
+      console.log(valueWei);
+      setdecimalexactvalue(valueWei);
 
       // console.log(geturl);
       // console.log(poolTokenTotalSupply);
@@ -375,7 +479,8 @@ const App = () => {
       });
   };
 
-  const redeemStockToken = async (a) => {
+  const InfiniteApprovalCash = async () => {
+    var a = "1000000";
     let valueWei = window.web3.utils.toWei(a).toString();
 
     var b = parseInt(cashDecimals);
@@ -383,7 +488,32 @@ const App = () => {
     if (b < 18) {
       d = 18 - b;
       d = 10 ** d;
-      valueWei = parseInt(valueWei) / 100;
+      valueWei = parseInt(valueWei) / d;
+    }
+
+    console.log(valueWei, b, c, d);
+    valueWei = valueWei.toString();
+    await cashsc.methods
+      .approve(Stockliqidatoraddress, valueWei)
+      .send({ from: account })
+      .once("receipt", async (receipt) => {
+        setrefresh(1);
+      })
+      .on("error", (error) => {
+        setrefresh(1);
+      });
+  };
+
+  const InfiniteApprovalStock = async () => {
+    var a = "1000000";
+    let valueWei = window.web3.utils.toWei(a).toString();
+
+    var b = parseInt(cashDecimals);
+    let c, d;
+    if (b < 18) {
+      d = 18 - b;
+      d = 10 ** d;
+      valueWei = parseInt(valueWei) / d;
     }
 
     console.log(valueWei, b, c, d);
@@ -392,21 +522,73 @@ const App = () => {
       .approve(Stockliqidatoraddress, valueWei)
       .send({ from: account })
       .once("receipt", async (receipt) => {
-        setLoading(false);
+        setrefresh(1);
       })
       .on("error", (error) => {
-        window.location.reload();
+        setrefresh(1);
       });
+  };
+
+  const InfiniteApprovalStockLiquidator = async () => {
+    var a = "1000000";
+    let valueWei = window.web3.utils.toWei(a).toString();
+
+    var b = parseInt(cashDecimals);
+    let c, d;
+    if (b < 18) {
+      d = 18 - b;
+      d = 10 ** d;
+      valueWei = parseInt(valueWei) / d;
+    }
+
+    console.log(valueWei, b, c, d);
+    valueWei = valueWei.toString();
+    await stocksc.methods
+      .approve(ContractDetails.stockLiquidatorAddress, valueWei)
+      .send({ from: account })
+      .once("receipt", async (receipt) => {
+        setrefresh(1);
+      })
+      .on("error", (error) => {
+        setrefresh(1);
+      });
+  };
+
+  const redeemStockToken = async (a) => {
+    let valueWei = window.web3.utils.toWei(a).toString();
+
+    var b = parseInt(cashDecimals);
+    let c, d;
+    if (b < 18) {
+      d = 18 - b;
+      d = 10 ** d;
+      valueWei = parseInt(valueWei) / d;
+    }
+
+    console.log(valueWei, b, c, d);
+    valueWei = valueWei.toString();
+    if (parseInt(stockliquidatorStockallowance) >= parseInt(valueWei)) {
+    } else {
+      await stocktokensc.methods
+        .approve(Stockliqidatoraddress, valueWei)
+        .send({ from: account })
+        .once("receipt", async (receipt) => {
+          setLoading(false);
+        })
+        .on("error", (error) => {
+          setrefresh(1);
+        });
+    }
 
     await stocksc.methods
       .redeemStockToken(valueWei)
       .send({ from: account })
       .once("receipt", async (receipt) => {
         setLoading(false);
-        window.location.reload();
+        setrefresh(1);
       })
       .on("error", (error) => {
-        window.location.reload();
+        setrefresh(1);
       });
   };
 
@@ -418,18 +600,21 @@ const App = () => {
     if (b < 18) {
       d = 18 - b;
       d = 10 ** d;
-      valueWei = parseInt(valueWei) / 100;
+      valueWei = parseInt(valueWei) / d;
     }
 
     console.log(valueWei, b, c, d);
     valueWei = valueWei.toString();
-    await cashsc.methods
-      .approve(Stockliqidatoraddress, valueWei)
-      .send({ from: account })
-      .once("receipt", async (receipt) => {})
-      .on("error", (error) => {
-        window.location.reload();
-      });
+    if (parseInt(stockliquidatorCashallowance) >= parseInt(valueWei)) {
+    } else {
+      await cashsc.methods
+        .approve(Stockliqidatoraddress, valueWei)
+        .send({ from: account })
+        .once("receipt", async (receipt) => {})
+        .on("error", (error) => {
+          setrefresh(1);
+        });
+    }
 
     await stocksc.methods
       .mintPoolToken(valueWei)
@@ -438,7 +623,7 @@ const App = () => {
         setLoading(false);
       })
       .on("error", (error) => {
-        window.location.reload();
+        setrefresh(1);
       });
   };
 
@@ -457,23 +642,26 @@ const App = () => {
     valueWei = valueWei.toString();
     console.log(a);
     console.log(Stockliqidatoraddress);
-    await stocksc.methods
-      .approve(Stockliqidatoraddress, valueWei)
-      .send({ from: account })
-      .once("receipt", async (receipt) => {})
-      .on("error", (error) => {
-        window.location.reload();
-      });
+    if (parseInt(stockliquidatorallowance) >= parseInt(valueWei)) {
+    } else {
+      await stocksc.methods
+        .approve(ContractDetails.stockLiquidatorAddress, valueWei)
+        .send({ from: account })
+        .once("receipt", async (receipt) => {})
+        .on("error", (error) => {
+          setrefresh(1);
+        });
+    }
 
     await stocksc.methods
       .burnPoolToken(valueWei)
       .send({ from: account })
       .once("receipt", async (receipt) => {
         setLoading(false);
-        window.location.reload();
+        setrefresh(1);
       })
       .on("error", (error) => {
-        window.location.reload();
+        setrefresh(1);
       });
   };
 
@@ -495,10 +683,10 @@ const App = () => {
       .send({ from: account })
       .once("receipt", async (receipt) => {
         setLoading(false);
-        window.location.reload();
+        setrefresh(1);
       })
       .on("error", (error) => {
-        window.location.reload();
+        setrefresh(1);
       });
   };
 
@@ -508,10 +696,10 @@ const App = () => {
       .send({ from: account })
       .once("receipt", async (receipt) => {
         setLoading(false);
-        window.location.reload();
+        setrefresh(1);
       })
       .on("error", (error) => {
-        window.location.reload();
+        setrefresh(1);
       });
   };
 
@@ -521,17 +709,32 @@ const App = () => {
       .send({ from: account })
       .once("receipt", async (receipt) => {
         setLoading(false);
-        window.location.reload();
+        setrefresh(1);
       })
       .on("error", (error) => {
-        window.location.reload();
+        setrefresh(1);
       });
   };
+
+  useEffect(() => {
+    try {
+      loadWeb3();
+      loadBlockchainData();
+    } catch (e) {
+      return <div>Helllo</div>;
+    }
+    if (refresh == 1) {
+      setrefresh(0);
+      loadBlockchainData();
+    }
+    //esl
+  }, [refresh]);
 
   if (loading === true) {
     content = (
       <p className="text-center">
-        Loading...{loading2 ? <div>load on mainnet </div> : ""}
+        Loading...
+        {loading2 ? <div>load on mainnet </div> : ""}
       </p>
     );
   } else {
@@ -598,6 +801,20 @@ const App = () => {
                     dcashValauationCap={dcashValauationCap}
                     urlll={urlll}
                     CashSymbol={CashSymbol}
+                    InfiniteApprovalCash={InfiniteApprovalCash}
+                    stockliquidatorCashallowance={stockliquidatorCashallowance}
+                    stockliquidatorStockallowance={
+                      stockliquidatorStockallowance
+                    }
+                    InfiniteApprovalStock={InfiniteApprovalStock}
+                    stockliquidatorallowance={stockliquidatorallowance}
+                    InfiniteApprovalStockLiquidator={
+                      InfiniteApprovalStockLiquidator
+                    }
+                    decimalexactvalue={decimalexactvalue}
+                    Stockliqidatoraddress={Stockliqidatoraddress}
+                    AssetTokenaddress={AssetTokenaddress}
+                    TokenAddress={TokenAddress}
                   />
                 </Fragment>
               )}
@@ -625,6 +842,21 @@ const App = () => {
                     urlll={urlll}
                     data={data}
                     CashSymbol={CashSymbol}
+                    InfiniteApprovalCash={InfiniteApprovalCash}
+                    stockliquidatorCashallowance={stockliquidatorCashallowance}
+                    stockliquidatorStockallowance={
+                      stockliquidatorStockallowance
+                    }
+                    InfiniteApprovalStock={InfiniteApprovalStock}
+                    stockliquidatorallowance={stockliquidatorallowance}
+                    InfiniteApprovalStockLiquidator={
+                      InfiniteApprovalStockLiquidator
+                    }
+                    decimalexactvalue={decimalexactvalue}
+                    Stockliqidatoraddress={Stockliqidatoraddress}
+                    Stockliqidatoraddress={Stockliqidatoraddress}
+                    AssetTokenaddress={AssetTokenaddress}
+                    TokenAddress={TokenAddress}
                   />
                 </Fragment>
               )}
@@ -638,7 +870,151 @@ const App = () => {
   return (
     <div>
       <Navbar account={account} />
-      {content}
+      {loading === true ? (
+        <p className="text-center">
+          {account == "" ? (
+            <div>
+              {" "}
+              Connect your wallet to application{"   "}{" "}
+              {/* <div className="asset btn btn-grey-box" onClick={loadWeb3}>
+                <span>Connect </span>
+              </div>{" "} */}
+            </div>
+          ) : (
+            "Loding...."
+          )}
+        </p>
+      ) : (
+        <div>
+          <Router>
+            <Switch>
+              <Route
+                exact
+                path="/deploy"
+                render={() => (
+                  <Fragment>
+                    <ContractDeployment onsubmitdetails={onsubmitdetails} />
+                  </Fragment>
+                )}
+              />
+              <Route
+                path="/admin"
+                render={() => (
+                  <Fragment>
+                    <Admin
+                      redeemStockToken={redeemStockToken}
+                      mintPoolToken={mintPoolToken}
+                      burnPoolToken={burnPoolToken}
+                      updateCashValuationCap={updateCashValuationCap}
+                      changeOwner={changeOwner}
+                      pooltokenTotalSupply={pooltokenTotalSupply}
+                      contractCashBalance={contractCashBalance}
+                      contractstockTokenBalance={contractstockTokenBalance}
+                      contractCashValuation={contractCashValuation}
+                      mycashbalance={mycashbalance}
+                      mystockbalance={mystockbalance}
+                      mypoolbalance={mypoolbalance}
+                      pooltocash={pooltocash}
+                      stocktocash={stocktocash}
+                      updateurl={updateurl}
+                      dcashValauationCap={dcashValauationCap}
+                      urlll={urlll}
+                    />
+                  </Fragment>
+                )}
+              />
+
+              <Route
+                path="/"
+                render={() => (
+                  <Fragment>
+                    <Body
+                      redeemStockToken={redeemStockToken}
+                      mintPoolToken={mintPoolToken}
+                      burnPoolToken={burnPoolToken}
+                      updateCashValuationCap={updateCashValuationCap}
+                      changeOwner={changeOwner}
+                      pooltokenTotalSupply={pooltokenTotalSupply}
+                      contractCashBalance={contractCashBalance}
+                      contractstockTokenBalance={contractstockTokenBalance}
+                      contractCashValuation={contractCashValuation}
+                      mycashbalance={mycashbalance}
+                      mystockbalance={mystockbalance}
+                      mypoolbalance={mypoolbalance}
+                      pooltocash={pooltocash}
+                      stocktocash={stocktocash}
+                      updateurl={updateurl}
+                      dcashValauationCap={dcashValauationCap}
+                      urlll={urlll}
+                      CashSymbol={CashSymbol}
+                      InfiniteApprovalCash={InfiniteApprovalCash}
+                      stockliquidatorCashallowance={
+                        stockliquidatorCashallowance
+                      }
+                      stockliquidatorStockallowance={
+                        stockliquidatorStockallowance
+                      }
+                      InfiniteApprovalStock={InfiniteApprovalStock}
+                      stockliquidatorallowance={stockliquidatorallowance}
+                      InfiniteApprovalStockLiquidator={
+                        InfiniteApprovalStockLiquidator
+                      }
+                      decimalexactvalue={decimalexactvalue}
+                      Stockliqidatoraddress={Stockliqidatoraddress}
+                      AssetTokenaddress={AssetTokenaddress}
+                      TokenAddress={TokenAddress}
+                    />
+                  </Fragment>
+                )}
+              />
+              <Route
+                path="*"
+                render={() => (
+                  <Fragment>
+                    <Body
+                      redeemStockToken={redeemStockToken}
+                      mintPoolToken={mintPoolToken}
+                      burnPoolToken={burnPoolToken}
+                      updateCashValuationCap={updateCashValuationCap}
+                      changeOwner={changeOwner}
+                      pooltokenTotalSupply={pooltokenTotalSupply}
+                      contractCashBalance={contractCashBalance}
+                      contractstockTokenBalance={contractstockTokenBalance}
+                      contractCashValuation={contractCashValuation}
+                      mycashbalance={mycashbalance}
+                      mystockbalance={mystockbalance}
+                      mypoolbalance={mypoolbalance}
+                      pooltocash={pooltocash}
+                      stocktocash={stocktocash}
+                      dcashValauationCap={dcashValauationCap}
+                      urlll={urlll}
+                      data={data}
+                      CashSymbol={CashSymbol}
+                      InfiniteApprovalCash={InfiniteApprovalCash}
+                      stockliquidatorCashallowance={
+                        stockliquidatorCashallowance
+                      }
+                      stockliquidatorStockallowance={
+                        stockliquidatorStockallowance
+                      }
+                      InfiniteApprovalStock={InfiniteApprovalStock}
+                      stockliquidatorallowance={stockliquidatorallowance}
+                      InfiniteApprovalStockLiquidator={
+                        InfiniteApprovalStockLiquidator
+                      }
+                      decimalexactvalue={decimalexactvalue}
+                      Stockliqidatoraddress={Stockliqidatoraddress}
+                      Stockliqidatoraddress={Stockliqidatoraddress}
+                      AssetTokenaddress={AssetTokenaddress}
+                      TokenAddress={TokenAddress}
+                    />
+                  </Fragment>
+                )}
+              />
+            </Switch>
+          </Router>
+        </div>
+      )}
     </div>
   );
 };
