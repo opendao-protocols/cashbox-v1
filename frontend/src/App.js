@@ -621,6 +621,8 @@ const App = () => {
       .send({ from: account })
       .once("receipt", async (receipt) => {
         setLoading(false);
+        setrefresh(1);
+        setrefresh(1);
       })
       .on("error", (error) => {
         setrefresh(1);
@@ -881,7 +883,7 @@ const App = () => {
               </div>{" "} */}
             </div>
           ) : (
-            "Loding...."
+            "Loading...."
           )}
         </p>
       ) : (
