@@ -20,6 +20,12 @@ const Admin = ({
   dcashValauationCap,
   urlll,
   data,
+  CashSymbol,
+  Stockliqidatoraddress,
+  AssetTokenaddress,
+  TokenAddress,
+  getNetwork,
+  getNetworkEtherscanURL,
 }) => {
   const [sellstockvalue, setsellstockvalue] = useState("");
   const [sellmintvalue, setsellmintvalue] = useState("");
@@ -280,27 +286,28 @@ const Admin = ({
             <br></br>
             <br></br>
 
-            <div class="row">
-              <div class="col-md-10 offset-md-1 section">
-                <h3 class="section-heading">CONTRACT ADDRESSES</h3>
-                <table class="table text-left">
-                  <tbody>
-                    <tr>
-                      <td>Cash Address:</td>
-                      <td>0x58eCf1a6B2af462E69765261e15536ddef8A8C41</td>
-                    </tr>
-                    <tr>
-                      <td class="text-break">Pool Token Address: </td>
-                      <td>0x405594E2379f393F9A00ceF2f2f0A844Efcfd6eC</td>
-                    </tr>
-                    <tr>
-                      <td class="text-break">Asset Token Address:</td>
-                      <td>0x9312b558cA3659909a38C27802bB46C5AC541552</td>
-                    </tr>
-                  </tbody>
-                </table>
+            <div className="row">
+                <div className="col-md-10 offset-md-1 section">
+                  <h3 className="section-heading">CONTRACT ADDRESSES</h3>
+                  <table className="table text-left">
+                    <tbody>
+                      <tr>
+                        <td>{CashSymbol} Address:</td>
+                        <td><a href={getNetworkEtherscanURL + TokenAddress}  className="link" target="_blank"> {TokenAddress}</a></td>
+                      </tr>
+                      <tr>
+                        <td className="text-break">Pool Token Address: </td>
+                        <td><a href={getNetworkEtherscanURL + Stockliqidatoraddress} className="link" target="_blank"> {Stockliqidatoraddress}</a></td>
+                      </tr>
+                      <tr>
+                        <td className="text-break">Asset Token Address:</td>
+                        <td><a href={getNetworkEtherscanURL + AssetTokenaddress} className="link" target="_blank">{AssetTokenaddress}</a></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
+
           </div>
 
           </div>

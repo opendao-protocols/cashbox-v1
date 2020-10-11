@@ -37,6 +37,8 @@ const Body = ({
   Stockliqidatoraddress,
   AssetTokenaddress,
   TokenAddress,
+  getNetwork,
+  getNetworkEtherscanURL,
 }) => {
   console.log(Stockliqidatoraddress, AssetTokenaddress, TokenAddress);
   const [sellstockvalue, setsellstockvalue] = useState("");
@@ -357,7 +359,7 @@ const Body = ({
             </div>
             <br></br>
             <br></br>
-            <div style={{ backgroundColor: "#ffffff" }}>
+            <div style={{ backgroundColor: "#ffffff", borderRadius: "6px" }}>
               <span style={{ color: "black" }}>Cash Infinite Allowance</span>
               {parseInt(stockliquidatorCashallowance) <=
               parseInt(decimalexactvalue) ? (
@@ -379,7 +381,7 @@ const Body = ({
                 />
               )}
 
-              <span style={{ color: "black" }}>Stock Infinite Allowance</span>
+              <span style={{ color: "black" }}>Asset Infinite Allowance</span>
               {parseInt(stockliquidatorStockallowance) <=
               parseInt(decimalexactvalue) ? (
                 // parseInt(sellredeemvalue) +
@@ -475,7 +477,7 @@ const Body = ({
                             : parseFloat(sellredeemvalue) >
                               parseFloat(contractstockTokenBalance) *
                                 parseFloat(stocktocash)
-                            ? "You will recieve " +
+                            ? "You will receive " +
                               contractstockTokenBalance +
                               " " +
                               "Asset Token" +
@@ -552,20 +554,21 @@ const Body = ({
                     <tbody>
                       <tr>
                         <td>{CashSymbol} Address:</td>
-                        <td>{TokenAddress}</td>
+                        <td><a href={getNetworkEtherscanURL + TokenAddress}  className="link" target="_blank"> {TokenAddress}</a></td>
                       </tr>
                       <tr>
                         <td className="text-break">Pool Token Address: </td>
-                        <td>{Stockliqidatoraddress}</td>
+                        <td><a href={getNetworkEtherscanURL + Stockliqidatoraddress} className="link" target="_blank"> {Stockliqidatoraddress}</a></td>
                       </tr>
                       <tr>
                         <td className="text-break">Asset Token Address:</td>
-                        <td>{AssetTokenaddress}</td>
+                        <td><a href={getNetworkEtherscanURL + AssetTokenaddress} className="link" target="_blank">{AssetTokenaddress}</a></td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
+              
             </div>
           </div>
         </div>

@@ -35,6 +35,12 @@ const Navbar = (props) => {
           </div>
         </li>
         </a>
+        <li className="nav-item text-white ml-auto">
+          <div className="asset btn btn-grey-box" style={{ cursor: "default", boxShadow: "none" }}>
+            <span className="dot"></span>
+            <span >{props.getNetwork}</span>
+          </div>
+        </li>
         <li className="nav-item text-white">
         <div className="asset btn btn-grey-box" style={{ cursor: "default", boxShadow: "none" }}>
               <span>{trucateAddress(props.account)}</span>

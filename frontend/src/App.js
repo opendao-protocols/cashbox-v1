@@ -71,6 +71,9 @@ const App = () => {
 
   const [stockliquidatorallowance, setstockliquidatorallowance] = useState("");
 
+  const [getNetwork, setNetwork] = useState("");
+  const [getNetworkEtherscanURL, setNetworkEtherscanURL] = useState("");
+
   const loadWeb3 = async () => {
     try {
       if (window.ethereum) {
@@ -118,6 +121,10 @@ const App = () => {
         MainContractDetails.stockLiquidatorABI
       );
       setContract(contract);
+
+      setNetwork("Main Net");
+      setNetworkEtherscanURL("https://etherscan.io/address/");
+      console.log(getNetwork);
 
       const Stock = new web3.eth.Contract(
         MainContractDetails.stockLiquidatorABI,
@@ -275,6 +282,11 @@ const App = () => {
         ContractDetails.stockLiquidatorABI
       );
       setContract(contract);
+
+      setNetwork("Kovan");
+      setNetworkEtherscanURL("https://kovan.etherscan.io/address/");
+      console.log(getNetwork);
+      console.log(getNetworkEtherscanURL);
 
       const Stock = new web3.eth.Contract(
         ContractDetails.stockLiquidatorABI,
@@ -718,6 +730,7 @@ const App = () => {
       });
   };
 
+
   useEffect(() => {
     try {
       loadWeb3();
@@ -735,7 +748,7 @@ const App = () => {
   if (loading === true) {
     content = (
       <p className="text-center">
-        Loading...
+        Loading ...
         {loading2 ? <div>load on mainnet </div> : ""}
       </p>
     );
@@ -775,6 +788,7 @@ const App = () => {
                     updateurl={updateurl}
                     dcashValauationCap={dcashValauationCap}
                     urlll={urlll}
+                    getNetworkEtherscanURL={getNetworkEtherscanURL}
                   />
                 </Fragment>
               )}
@@ -817,6 +831,8 @@ const App = () => {
                     Stockliqidatoraddress={Stockliqidatoraddress}
                     AssetTokenaddress={AssetTokenaddress}
                     TokenAddress={TokenAddress}
+                    getNetwork={getNetwork}
+                    getNetworkEtherscanURL={getNetworkEtherscanURL}
                   />
                 </Fragment>
               )}
@@ -859,6 +875,8 @@ const App = () => {
                     Stockliqidatoraddress={Stockliqidatoraddress}
                     AssetTokenaddress={AssetTokenaddress}
                     TokenAddress={TokenAddress}
+                    getNetwork={getNetwork}
+                    getNetworkEtherscanURL={getNetworkEtherscanURL}
                   />
                 </Fragment>
               )}
@@ -871,7 +889,7 @@ const App = () => {
 
   return (
     <div>
-      <Navbar account={account} />
+      <Navbar account={account} getNetwork={getNetwork} />
       {loading === true ? (
         <p className="text-center">
           {account == "" ? (
@@ -883,7 +901,7 @@ const App = () => {
               </div>{" "} */}
             </div>
           ) : (
-            "Loading...."
+            "Loading ...."
           )}
         </p>
       ) : (
@@ -921,6 +939,11 @@ const App = () => {
                       updateurl={updateurl}
                       dcashValauationCap={dcashValauationCap}
                       urlll={urlll}
+                      Stockliqidatoraddress={Stockliqidatoraddress}
+                      AssetTokenaddress={AssetTokenaddress}
+                      TokenAddress={TokenAddress}
+                      getNetwork={getNetwork}
+                      getNetworkEtherscanURL={getNetworkEtherscanURL}
                     />
                   </Fragment>
                 )}
@@ -965,6 +988,8 @@ const App = () => {
                       Stockliqidatoraddress={Stockliqidatoraddress}
                       AssetTokenaddress={AssetTokenaddress}
                       TokenAddress={TokenAddress}
+                      getNetwork={getNetwork}
+                      getNetworkEtherscanURL={getNetworkEtherscanURL}
                     />
                   </Fragment>
                 )}
@@ -1006,9 +1031,10 @@ const App = () => {
                       }
                       decimalexactvalue={decimalexactvalue}
                       Stockliqidatoraddress={Stockliqidatoraddress}
-                      Stockliqidatoraddress={Stockliqidatoraddress}
                       AssetTokenaddress={AssetTokenaddress}
                       TokenAddress={TokenAddress}
+                      getNetwork={getNetwork}
+                      getNetworkEtherscanURL={getNetworkEtherscanURL}
                     />
                   </Fragment>
                 )}
