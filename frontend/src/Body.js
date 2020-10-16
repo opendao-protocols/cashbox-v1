@@ -268,7 +268,7 @@ const Body = ({
           <div>
             <div className="row">
               <div className="col-md-12">
-                <h3>The AREIT CashBox</h3>
+                <h3>The AREIT CashBox Asset Explorer</h3>
                 <br></br>
                 <p>
                   Deploy to this CashBox to become an on-chain LP counterparty
