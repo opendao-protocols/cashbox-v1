@@ -18,7 +18,9 @@ interface IERC20 {
      *
      * Emits a {Transfer} event.
      */
-    function transfer(address recipient, uint256 amount) external returns (bool);
+    function transfer(address recipient, uint256 amount)
+        external
+        returns (bool);
 
     /**
      * @dev Returns the remaining number of tokens that `spender` will be
@@ -27,7 +29,10 @@ interface IERC20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(address owner, address spender) external view returns (uint256);
+    function allowance(address owner, address spender)
+        external
+        view
+        returns (uint256);
 
     /**
      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -54,7 +59,11 @@ interface IERC20 {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external returns (bool);
 
     /**
      * @dev Emitted when `value` tokens are moved from one account (`from`) to
@@ -68,19 +77,23 @@ interface IERC20 {
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
      * a call to {approve}. `value` is the new allowance.
      */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 }
 
 contract Context {
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
-    constructor () internal { }
+    constructor() internal {}
 
-    function _msgSender() internal view  returns (address payable) {
+    function _msgSender() internal view returns (address payable) {
         return msg.sender;
     }
 
-    function _msgData() internal view  returns (bytes memory) {
+    function _msgData() internal view returns (bytes memory) {
         this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691
         return msg.data;
     }
@@ -125,7 +138,11 @@ library SafeMath {
      * Requirements:
      * - Subtraction cannot overflow.
      */
-    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+    function sub(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
         require(b <= a, errorMessage);
         uint256 c = a - b;
 
@@ -181,7 +198,11 @@ library SafeMath {
      * Requirements:
      * - The divisor cannot be zero.
      */
-    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+    function div(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
         // Solidity only automatically asserts when dividing by 0
         require(b > 0, errorMessage);
         uint256 c = a / b;
@@ -216,7 +237,11 @@ library SafeMath {
      * Requirements:
      * - The divisor cannot be zero.
      */
-    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+    function mod(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
         require(b != 0, errorMessage);
         return a % b;
     }
@@ -225,23 +250,23 @@ library SafeMath {
 contract ERC20 is Context, IERC20 {
     using SafeMath for uint256;
 
-    mapping (address => uint256) private _balances;
+    mapping(address => uint256) private _balances;
 
-    mapping (address => mapping (address => uint256)) private _allowances;
+    mapping(address => mapping(address => uint256)) private _allowances;
 
     uint256 private _totalSupply;
 
     /**
      * @dev See {IERC20-totalSupply}.
      */
-    function totalSupply() public view  returns (uint256) {
+    function totalSupply() public view returns (uint256) {
         return _totalSupply;
     }
 
     /**
      * @dev See {IERC20-balanceOf}.
      */
-    function balanceOf(address account) public view  returns (uint256) {
+    function balanceOf(address account) public view returns (uint256) {
         return _balances[account];
     }
 
@@ -253,7 +278,7 @@ contract ERC20 is Context, IERC20 {
      * - `recipient` cannot be the zero address.
      * - the caller must have a balance of at least `amount`.
      */
-    function transfer(address recipient, uint256 amount) public   returns (bool) {
+    function transfer(address recipient, uint256 amount) public returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
@@ -261,7 +286,11 @@ contract ERC20 is Context, IERC20 {
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(address owner, address spender) public view   returns (uint256) {
+    function allowance(address owner, address spender)
+        public
+        view
+        returns (uint256)
+    {
         return _allowances[owner][spender];
     }
 
@@ -272,7 +301,7 @@ contract ERC20 is Context, IERC20 {
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(address spender, uint256 amount) public   returns (bool) {
+    function approve(address spender, uint256 amount) public returns (bool) {
         _approve(_msgSender(), spender, amount);
         return true;
     }
@@ -289,9 +318,20 @@ contract ERC20 is Context, IERC20 {
      * - the caller must have allowance for `sender`'s tokens of at least
      * `amount`.
      */
-    function transferFrom(address sender, address recipient, uint256 amount) public   returns (bool) {
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) public returns (bool) {
         _transfer(sender, recipient, amount);
-        _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
+        _approve(
+            sender,
+            _msgSender(),
+            _allowances[sender][_msgSender()].sub(
+                amount,
+                "ERC20: transfer amount exceeds allowance"
+            )
+        );
         return true;
     }
 
@@ -307,8 +347,15 @@ contract ERC20 is Context, IERC20 {
      *
      * - `spender` cannot be the zero address.
      */
-    function increaseAllowance(address spender, uint256 addedValue) public  returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].add(addedValue));
+    function increaseAllowance(address spender, uint256 addedValue)
+        public
+        returns (bool)
+    {
+        _approve(
+            _msgSender(),
+            spender,
+            _allowances[_msgSender()][spender].add(addedValue)
+        );
         return true;
     }
 
@@ -326,8 +373,18 @@ contract ERC20 is Context, IERC20 {
      * - `spender` must have allowance for the caller of at least
      * `subtractedValue`.
      */
-    function decreaseAllowance(address spender, uint256 subtractedValue) public  returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
+    function decreaseAllowance(address spender, uint256 subtractedValue)
+        public
+        returns (bool)
+    {
+        _approve(
+            _msgSender(),
+            spender,
+            _allowances[_msgSender()][spender].sub(
+                subtractedValue,
+                "ERC20: decreased allowance below zero"
+            )
+        );
         return true;
     }
 
@@ -345,12 +402,18 @@ contract ERC20 is Context, IERC20 {
      * - `recipient` cannot be the zero address.
      * - `sender` must have a balance of at least `amount`.
      */
-    function _transfer(address sender, address recipient, uint256 amount) internal  {
+    function _transfer(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) internal {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
 
-
-        _balances[sender] = _balances[sender].sub(amount, "ERC20: transfer amount exceeds balance");
+        _balances[sender] = _balances[sender].sub(
+            amount,
+            "ERC20: transfer amount exceeds balance"
+        );
         _balances[recipient] = _balances[recipient].add(amount);
         emit Transfer(sender, recipient, amount);
     }
@@ -364,9 +427,8 @@ contract ERC20 is Context, IERC20 {
      *
      * - `to` cannot be the zero address.
      */
-    function _mint(address account, uint256 amount) internal  {
+    function _mint(address account, uint256 amount) internal {
         require(account != address(0), "ERC20: mint to the zero address");
-
 
         _totalSupply = _totalSupply.add(amount);
         _balances[account] = _balances[account].add(amount);
@@ -384,11 +446,13 @@ contract ERC20 is Context, IERC20 {
      * - `account` cannot be the zero address.
      * - `account` must have at least `amount` tokens.
      */
-    function _burn(address account, uint256 amount) internal  {
+    function _burn(address account, uint256 amount) internal {
         require(account != address(0), "ERC20: burn from the zero address");
 
-
-        _balances[account] = _balances[account].sub(amount, "ERC20: burn amount exceeds balance");
+        _balances[account] = _balances[account].sub(
+            amount,
+            "ERC20: burn amount exceeds balance"
+        );
         _totalSupply = _totalSupply.sub(amount);
         emit Transfer(account, address(0), amount);
     }
@@ -406,92 +470,121 @@ contract ERC20 is Context, IERC20 {
      * - `owner` cannot be the zero address.
      * - `spender` cannot be the zero address.
      */
-    function _approve(address owner, address spender, uint256 amount) internal  {
+    function _approve(
+        address owner,
+        address spender,
+        uint256 amount
+    ) internal {
         require(owner != address(0), "ERC20: approve from the zero address");
         require(spender != address(0), "ERC20: approve to the zero address");
 
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
     }
-
-   
 }
 
 contract ERC20Detailed is IERC20 {
-  string private _name;
-  string private _symbol;
-  uint8 private _decimals;
+    string private _name;
+    string private _symbol;
+    uint8 private _decimals;
 
-  constructor(string memory name, string memory symbol, uint8 decimals) public {
-    _name = name;
-    _symbol = symbol;
-    _decimals = decimals;
-  }
+    constructor(
+        string memory name,
+        string memory symbol,
+        uint8 decimals
+    ) public {
+        _name = name;
+        _symbol = symbol;
+        _decimals = decimals;
+    }
 
-  /**
-   * @return the name of the token.
-   */
-  function name() public view returns(string memory) {
-    return _name;
-  }
+    /**
+     * @return the name of the token.
+     */
+    function name() public view returns (string memory) {
+        return _name;
+    }
 
-  /**
-   * @return the symbol of the token.
-   */
-  function symbol() public view returns(string memory) {
-    return _symbol;
-  }
+    /**
+     * @return the symbol of the token.
+     */
+    function symbol() public view returns (string memory) {
+        return _symbol;
+    }
 
-  /**
-   * @return the number of decimals of the token.
-   */
-  function decimals() public view returns(uint8) {
-    return _decimals;
-  }
+    /**
+     * @return the number of decimals of the token.
+     */
+    function decimals() public view returns (uint8) {
+        return _decimals;
+    }
 }
 
-contract StockLiquiditator is ERC20,ERC20Detailed
-{
-
+contract StockLiquiditator is ERC20, ERC20Detailed {
     using SafeMath for uint256;
-    
+
     uint256 public cashDecimals;
     uint256 public stockTokenMultiplier;
-    
+
     ERC20Detailed internal cash;
     ERC20Detailed internal stockToken;
-    
+
     uint256 public stockToCashRate;
     uint256 public poolToCashRate;
     uint256 public cashValauationCap;
-    
+
     string public url;
-    
+
     event UrlUpdated(string _url);
     event ValuationCapUpdated(uint256 cashCap);
     event OwnerChanged(address indexed newOwner);
     event PoolRateUpdated(uint256 poolrate);
-    event PoolTokensMinted(address indexed user,uint256 inputCashAmount,uint256 mintedPoolAmount);
-    event PoolTokensBurnt(address indexed user,uint256 burntPoolAmount,uint256 outputStockAmount,uint256 outputCashAmount);
-    event StockTokensRedeemed(address indexed user,uint256 redeemedStockToken,uint256 outputCashAmount);
-    
-    function () external {  //fallback function
-        
+    event PoolTokensMinted(
+        address indexed user,
+        uint256 inputCashAmount,
+        uint256 mintedPoolAmount
+    );
+    event PoolTokensBurnt(
+        address indexed user,
+        uint256 burntPoolAmount,
+        uint256 outputStockAmount,
+        uint256 outputCashAmount
+    );
+    event StockTokensRedeemed(
+        address indexed user,
+        uint256 redeemedStockToken,
+        uint256 outputCashAmount
+    );
+
+    function() external {
+        //fallback function
     }
-    
+
     address payable public owner;
-    
+
     modifier onlyOwner() {
-        require (msg.sender == owner,"Account not Owner");
+        require(msg.sender == owner, "Account not Owner");
         _;
     }
-        
-    constructor (address cashAddress,address stockTokenAddress,uint256 _stockToCashRate,uint256 cashCap,string memory name,string memory symbol,string memory _url) 
-    public ERC20Detailed( name, symbol, 18)  
-    {
-        require(msg.sender != address(0), "Zero address cannot be owner/contract deployer");
+
+    constructor(
+        address cashAddress,
+        address stockTokenAddress,
+        uint256 _stockToCashRate,
+        uint256 cashCap,
+        string memory name,
+        string memory symbol,
+        string memory _url
+    ) public ERC20Detailed(name, symbol, 18) {
+        require(
+            msg.sender != address(0),
+            "Zero address cannot be owner/contract deployer"
+        );
         owner = msg.sender;
-        require(stockTokenAddress != address(0), "stockToken is the zero address");
+        require(
+            stockTokenAddress != address(0),
+            "stockToken is the zero address"
+        );
         require(cashAddress != address(0), "cash is the zero address");
         require(_stockToCashRate != 0, "Stock to cash rate can't be zero");
         cash = ERC20Detailed(cashAddress);
@@ -503,123 +596,168 @@ contract StockLiquiditator is ERC20,ERC20Detailed
         updateCashValuationCap(cashCap);
         updateURL(_url);
     }
-    
-    function updateURL(string memory _url) public onlyOwner returns(string memory){
-        url=_url;
+
+    function updateURL(string memory _url)
+        public
+        onlyOwner
+        returns (string memory)
+    {
+        url = _url;
         emit UrlUpdated(_url);
         return url;
     }
-    
-    function updateCashValuationCap(uint256 cashCap) public onlyOwner returns(uint256){
-        cashValauationCap=cashCap;
+
+    function updateCashValuationCap(uint256 cashCap)
+        public
+        onlyOwner
+        returns (uint256)
+    {
+        cashValauationCap = cashCap;
         emit ValuationCapUpdated(cashCap);
         return cashValauationCap;
     }
-    
+
     function changeOwner(address payable newOwner) external onlyOwner {
-        owner=newOwner;
+        owner = newOwner;
         emit OwnerChanged(newOwner);
     }
-    
+
     function stockTokenAddress() public view returns (address) {
         return address(stockToken);
     }
-    
-    function _preValidateData(address beneficiary, uint256 amount) internal pure {
+
+    function _preValidateData(address beneficiary, uint256 amount)
+        internal
+        pure
+    {
         require(beneficiary != address(0), "Beneficiary can't be zero address");
         require(amount != 0, "amount can't be 0");
     }
-    
-    function contractCashBalance() public view returns(uint256 cashBalance){
+
+    function contractCashBalance() public view returns (uint256 cashBalance) {
         return cash.balanceOf(address(this));
-    } 
-    
-    function contractStockTokenBalance() public view returns(uint256 stockTokenBalance){
+    }
+
+    function contractStockTokenBalance()
+        public
+        view
+        returns (uint256 stockTokenBalance)
+    {
         return stockToken.balanceOf(address(this));
     }
-    
-    function stockTokenCashValuation() internal view returns(uint256){
-        uint256 cashEquivalent=(contractStockTokenBalance().mul(stockToCashRate)).div(stockTokenMultiplier);
+
+    function stockTokenCashValuation() internal view returns (uint256) {
+        uint256 cashEquivalent = (
+            contractStockTokenBalance().mul(stockToCashRate)
+        )
+            .div(stockTokenMultiplier);
         return cashEquivalent;
     }
-    
-    function contractCashValuation() public view returns(uint256 cashValauation){
-        uint256 cashEquivalent=(contractStockTokenBalance().mul(stockToCashRate)).div(stockTokenMultiplier);
+
+    function contractCashValuation()
+        public
+        view
+        returns (uint256 cashValauation)
+    {
+        uint256 cashEquivalent = (
+            contractStockTokenBalance().mul(stockToCashRate)
+        )
+            .div(stockTokenMultiplier);
         return contractCashBalance().add(cashEquivalent);
     }
 
     function updatePoolRate() public returns (uint256 poolrate) {
-        if(totalSupply()==0){
-          poolToCashRate = (10**(cashDecimals)).mul(1);
-        }
-        else {
-            poolToCashRate=( (contractCashValuation().mul(1e18)).div(totalSupply()) );
+        if (totalSupply() == 0) {
+            poolToCashRate = (10**(cashDecimals)).mul(1);
+        } else {
+            poolToCashRate = (
+                (contractCashValuation().mul(1e18)).div(totalSupply())
+            );
         }
         emit PoolRateUpdated(poolrate);
         return poolToCashRate;
     }
-    
-    function mintPoolToken(uint256 inputCashAmount) external {    
-        if(cashValauationCap!=0)
-        {
-            require(inputCashAmount.add(contractCashValuation())<=cashValauationCap,"inputCashAmount exceeds cashValauationCap");
+
+    function mintPoolToken(uint256 inputCashAmount) external {
+        if (cashValauationCap != 0) {
+            require(
+                inputCashAmount.add(contractCashValuation()) <=
+                    cashValauationCap,
+                "inputCashAmount exceeds cashValauationCap"
+            );
         }
-        address sender= msg.sender;
-        _preValidateData(sender,inputCashAmount);
+        address sender = msg.sender;
+        _preValidateData(sender, inputCashAmount);
         updatePoolRate();
         uint256 balanceBeforeTransfer = cash.balanceOf(address(this));
-        cash.transferFrom(sender,address(this),inputCashAmount);
+        cash.transferFrom(sender, address(this), inputCashAmount);
         uint256 balanceAfterTransfer = cash.balanceOf(address(this));
-        require(balanceAfterTransfer == balanceBeforeTransfer.add(inputCashAmount),"Sent & Received Amount mismatched");
+        require(
+            balanceAfterTransfer == balanceBeforeTransfer.add(inputCashAmount),
+            "Sent & Received Amount mismatched"
+        );
         // calculate pool token amount to be minted
-        uint256 poolTokens = ( (inputCashAmount.mul(1e18)).div(poolToCashRate) );
+        uint256 poolTokens = ((inputCashAmount.mul(1e18)).div(poolToCashRate));
         _mint(sender, poolTokens); //Minting  Pool Token
-        emit PoolTokensMinted(sender,inputCashAmount,poolTokens);
+        emit PoolTokensMinted(sender, inputCashAmount, poolTokens);
     }
-    
-    function burnPoolToken(uint256 poolTokenAmount) external {  
-        address sender= msg.sender;
-        _preValidateData(sender,poolTokenAmount);
-        
+
+    function burnPoolToken(uint256 poolTokenAmount) external {
+        address sender = msg.sender;
+        _preValidateData(sender, poolTokenAmount);
+
         updatePoolRate();
-        uint256 cashToRedeem=( (poolTokenAmount.mul(poolToCashRate)).div(1e18) );
+        uint256 cashToRedeem = (
+            (poolTokenAmount.mul(poolToCashRate)).div(1e18)
+        );
         _burn(sender, poolTokenAmount);
-        
+
         uint256 outputStockToken = 0;
         uint256 outputCashAmount = 0;
-        
-        if( stockTokenCashValuation()>=cashToRedeem )
-        {
-         outputStockToken=( (cashToRedeem.mul(stockTokenMultiplier)).div(stockToCashRate) );//calculate stock token amount to be return
-         stockToken.transfer(sender,outputStockToken);
+
+        if (stockTokenCashValuation() >= cashToRedeem) {
+            outputStockToken = (
+                (cashToRedeem.mul(stockTokenMultiplier)).div(stockToCashRate)
+            ); //calculate stock token amount to be return
+            stockToken.transfer(sender, outputStockToken);
+        } else if (cashToRedeem > stockTokenCashValuation()) {
+            outputStockToken = contractStockTokenBalance();
+            outputCashAmount = cashToRedeem.sub(stockTokenCashValuation()); // calculate cash amount to be return
+            stockToken.transfer(sender, outputStockToken);
+
+            uint256 balanceBeforeTransfer = cash.balanceOf(sender);
+            cash.transfer(sender, outputCashAmount);
+            uint256 balanceAfterTransfer = cash.balanceOf(sender);
+            require(
+                balanceAfterTransfer ==
+                    balanceBeforeTransfer.add(outputCashAmount),
+                "Sent & Received Amount mismatched"
+            );
         }
-        
-        else if( cashToRedeem>stockTokenCashValuation() )
-        {
-        outputStockToken=contractStockTokenBalance();
-        outputCashAmount=cashToRedeem.sub(stockTokenCashValuation());// calculate cash amount to be return
-        stockToken.transfer(sender,outputStockToken);
-        
-        uint256 balanceBeforeTransfer = cash.balanceOf(sender);
-        cash.transfer(sender,outputCashAmount);
-        uint256 balanceAfterTransfer = cash.balanceOf(sender);
-        require(balanceAfterTransfer == balanceBeforeTransfer.add(outputCashAmount),"Sent & Received Amount mismatched");
-        }
-        emit PoolTokensBurnt(sender,poolTokenAmount,outputStockToken,outputCashAmount);
+        emit PoolTokensBurnt(
+            sender,
+            poolTokenAmount,
+            outputStockToken,
+            outputCashAmount
+        );
     }
-    
-    function redeemStockToken(uint256 stockTokenAmount) external{
-        address sender= msg.sender;
-        _preValidateData(sender,stockTokenAmount);
-        stockToken.transferFrom(sender,address(this),stockTokenAmount);
-        
+
+    function redeemStockToken(uint256 stockTokenAmount) external {
+        address sender = msg.sender;
+        _preValidateData(sender, stockTokenAmount);
+        stockToken.transferFrom(sender, address(this), stockTokenAmount);
+
         // calculate Cash amount to be return
-        uint256 outputCashAmount=(stockTokenAmount.mul(stockToCashRate)).div(stockTokenMultiplier);
+        uint256 outputCashAmount = (stockTokenAmount.mul(stockToCashRate)).div(
+            stockTokenMultiplier
+        );
         uint256 balanceBeforeTransfer = cash.balanceOf(sender);
-        cash.transfer(sender,outputCashAmount);
+        cash.transfer(sender, outputCashAmount);
         uint256 balanceAfterTransfer = cash.balanceOf(sender);
-        require(balanceAfterTransfer == balanceBeforeTransfer.add(outputCashAmount),"Sent & Received Amount mismatched");
-        emit StockTokensRedeemed(sender,stockTokenAmount,outputCashAmount);
+        require(
+            balanceAfterTransfer == balanceBeforeTransfer.add(outputCashAmount),
+            "Sent & Received Amount mismatched"
+        );
+        emit StockTokensRedeemed(sender, stockTokenAmount, outputCashAmount);
     }
-    
 }
