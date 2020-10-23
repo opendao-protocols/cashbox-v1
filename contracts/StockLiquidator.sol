@@ -526,8 +526,8 @@ contract StockLiquiditator is ERC20, ERC20Detailed {
     uint256 public cashDecimals;
     uint256 public stockTokenMultiplier;
 
-    ERC20Detailed internal cash;
-    ERC20Detailed internal stockToken;
+    ERC20Detailed public cash;
+    ERC20Detailed public stockToken;
 
     uint256 public stockToCashRate;
     uint256 public poolToCashRate;
