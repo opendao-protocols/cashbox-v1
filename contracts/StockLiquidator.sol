@@ -475,7 +475,7 @@ contract StockLiquiditator is ERC20,ERC20Detailed
     event PoolTokensBurnt(address indexed user,uint256 burntPoolAmount,uint256 outputStockAmount,uint256 outputCashAmount);
     event StockTokensRedeemed(address indexed user,uint256 redeemedStockToken,uint256 outputCashAmount);
     
-    function () external payable {  //fallback function
+    function () external {  //fallback function
         
     }
     
@@ -489,9 +489,11 @@ contract StockLiquiditator is ERC20,ERC20Detailed
     constructor (address cashAddress,address stockTokenAddress,uint256 _stockToCashRate,uint256 cashCap,string memory name,string memory symbol,string memory _url) 
     public ERC20Detailed( name, symbol, 18)  
     {
+        require(msg.sender != address(0), "Zero address cannot be owner/contract deployer");
         owner = msg.sender;
         require(stockTokenAddress != address(0), "stockToken is the zero address");
         require(cashAddress != address(0), "cash is the zero address");
+        require(_stockToCashRate != 0, "Stock to cash rate can't be zero");
         cash = ERC20Detailed(cashAddress);
         stockToken = ERC20Detailed(stockTokenAddress);
         cashDecimals = cash.decimals();
@@ -618,10 +620,6 @@ contract StockLiquiditator is ERC20,ERC20Detailed
         uint256 balanceAfterTransfer = cash.balanceOf(sender);
         require(balanceAfterTransfer == balanceBeforeTransfer.add(outputCashAmount),"Sent & Received Amount mismatched");
         emit StockTokensRedeemed(sender,stockTokenAmount,outputCashAmount);
-    }
-    
-    function kill() external onlyOwner {    //self destruct the code and transfer all contract balance to owner
-        selfdestruct(owner);
     }
     
 }
