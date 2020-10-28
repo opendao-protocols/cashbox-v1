@@ -591,7 +591,7 @@ contract StockLiquiditator is ERC20, ERC20Detailed {
         stockToken = ERC20Detailed(stockTokenAddress);
         cashDecimals = cash.decimals();
         stockTokenMultiplier = (10**uint256(stockToken.decimals()));
-        stockToCashRate = (10**(cashDecimals)).mul(_stockToCashRate);
+        stockToCashRate = ((10**cashDecimals).mul(_stockToCashRate)).div(1e18);
         updatePoolRate();
         updateCashValuationCap(cashCap);
         updateURL(_url);
