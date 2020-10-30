@@ -646,7 +646,7 @@ contract StockLiquiditator is ERC20, ERC20Detailed {
         return stockToken.balanceOf(address(this));
     }
 
-    function stockTokenCashValuation() internal view returns (uint256) {
+    function stockTokenCashValuation() public view returns (uint256) {
         uint256 cashEquivalent = (
             contractStockTokenBalance().mul(stockToCashRate)
         )
