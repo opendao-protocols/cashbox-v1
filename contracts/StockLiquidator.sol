@@ -84,6 +84,87 @@ interface IERC20 {
     );
 }
 
+/**
+ * @title INonStandardERC20
+ * @dev Version of ERC20 with no return values for `transfer` and `transferFrom`
+ *  See https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca
+ */
+interface INonStandardERC20 {
+    /**
+     * @notice Get the total number of tokens in circulation
+     * @return The supply of tokens
+     */
+    function totalSupply() external view returns (uint256);
+
+    /**
+     * @notice Gets the balance of the specified address
+     * @param owner The address from which the balance will be retrieved
+     * @return The balance
+     */
+    function balanceOf(address owner) external view returns (uint256 balance);
+
+    ///
+    /// !!!!!!!!!!!!!!
+    /// !!! NOTICE !!! `transfer` does not return a value, in violation of the ERC-20 specification
+    /// !!!!!!!!!!!!!!
+    ///
+
+    /**
+     * @notice Transfer `amount` tokens from `msg.sender` to `dst`
+     * @param dst The address of the destination account
+     * @param amount The number of tokens to transfer
+     */
+    function transfer(address dst, uint256 amount) external;
+
+    ///
+    /// !!!!!!!!!!!!!!
+    /// !!! NOTICE !!! `transferFrom` does not return a value, in violation of the ERC-20 specification
+    /// !!!!!!!!!!!!!!
+    ///
+
+    /**
+     * @notice Transfer `amount` tokens from `src` to `dst`
+     * @param src The address of the source account
+     * @param dst The address of the destination account
+     * @param amount The number of tokens to transfer
+     */
+    function transferFrom(
+        address src,
+        address dst,
+        uint256 amount
+    ) external;
+
+    /**
+     * @notice Approve `spender` to transfer up to `amount` from `src`
+     * @dev This will overwrite the approval amount for `spender`
+     *  and is subject to issues noted [here](https://eips.ethereum.org/EIPS/eip-20#approve)
+     * @param spender The address of the account which may transfer tokens
+     * @param amount The number of tokens that are approved
+     * @return Whether or not the approval succeeded
+     */
+    function approve(address spender, uint256 amount)
+        external
+        returns (bool success);
+
+    /**
+     * @notice Get the current allowance from `owner` for `spender`
+     * @param owner The address of the account which owns the tokens to be spent
+     * @param spender The address of the account which may transfer tokens
+     * @return The number of tokens allowed to be spent
+     */
+    function allowance(address owner, address spender)
+        external
+        view
+        returns (uint256 remaining);
+
+    event Transfer(address indexed from, address indexed to, uint256 amount);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 amount
+    );
+}
+
 contract Context {
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
@@ -689,17 +770,16 @@ contract StockLiquiditator is ERC20, ERC20Detailed {
         address sender = msg.sender;
         _preValidateData(sender, inputCashAmount);
         updatePoolRate();
-        uint256 balanceBeforeTransfer = cash.balanceOf(address(this));
-        cash.transferFrom(sender, address(this), inputCashAmount);
-        uint256 balanceAfterTransfer = cash.balanceOf(address(this));
-        require(
-            balanceAfterTransfer == balanceBeforeTransfer.add(inputCashAmount),
-            "Sent & Received Amount mismatched"
+        uint256 actualCashReceived = doTransferIn(
+            address(cash),
+            sender,
+            inputCashAmount
         );
+
         // calculate pool token amount to be minted
-        uint256 poolTokens = ((inputCashAmount.mul(1e18)).div(poolToCashRate));
+        uint256 poolTokens = (actualCashReceived.mul(1e18)).div(poolToCashRate);
         _mint(sender, poolTokens); //Minting  Pool Token
-        emit PoolTokensMinted(sender, inputCashAmount, poolTokens);
+        emit PoolTokensMinted(sender, actualCashReceived, poolTokens);
     }
 
     function burnPoolToken(uint256 poolTokenAmount) external {
@@ -719,20 +799,12 @@ contract StockLiquiditator is ERC20, ERC20Detailed {
             outputStockToken = (
                 (cashToRedeem.mul(stockTokenMultiplier)).div(stockToCashRate)
             ); //calculate stock token amount to be return
-            stockToken.transfer(sender, outputStockToken);
+            doTransferOut(address(stockToken), sender, outputStockToken);
         } else if (cashToRedeem > stockTokenCashValuation()) {
             outputStockToken = contractStockTokenBalance();
             outputCashAmount = cashToRedeem.sub(stockTokenCashValuation()); // calculate cash amount to be return
-            stockToken.transfer(sender, outputStockToken);
-
-            uint256 balanceBeforeTransfer = cash.balanceOf(sender);
-            cash.transfer(sender, outputCashAmount);
-            uint256 balanceAfterTransfer = cash.balanceOf(sender);
-            require(
-                balanceAfterTransfer ==
-                    balanceBeforeTransfer.add(outputCashAmount),
-                "Sent & Received Amount mismatched"
-            );
+            doTransferOut(address(stockToken), sender, outputStockToken);
+            doTransferOut(address(cash), sender, outputCashAmount);
         }
         emit PoolTokensBurnt(
             sender,
@@ -745,19 +817,96 @@ contract StockLiquiditator is ERC20, ERC20Detailed {
     function redeemStockToken(uint256 stockTokenAmount) external {
         address sender = msg.sender;
         _preValidateData(sender, stockTokenAmount);
-        stockToken.transferFrom(sender, address(this), stockTokenAmount);
+        uint256 actualStockReceived = doTransferIn(
+            address(stockToken),
+            sender,
+            stockTokenAmount
+        );
 
         // calculate Cash amount to be return
-        uint256 outputCashAmount = (stockTokenAmount.mul(stockToCashRate)).div(
-            stockTokenMultiplier
-        );
-        uint256 balanceBeforeTransfer = cash.balanceOf(sender);
-        cash.transfer(sender, outputCashAmount);
-        uint256 balanceAfterTransfer = cash.balanceOf(sender);
-        require(
-            balanceAfterTransfer == balanceBeforeTransfer.add(outputCashAmount),
-            "Sent & Received Amount mismatched"
-        );
-        emit StockTokensRedeemed(sender, stockTokenAmount, outputCashAmount);
+        uint256 outputCashAmount = (actualStockReceived.mul(stockToCashRate))
+            .div(stockTokenMultiplier);
+        doTransferOut(address(cash), sender, outputCashAmount);
+        emit StockTokensRedeemed(sender, actualStockReceived, outputCashAmount);
+    }
+
+    /**
+     * @dev Similar to EIP20 transfer, except it handles a False result from `transferFrom` and reverts in that case.
+     *      This will revert due to insufficient balance or insufficient allowance.
+     *      This function returns the actual amount received,
+     *      which may be less than `amount` if there is a fee attached to the transfer.
+     *
+     *      Note: This wrapper safely handles non-standard ERC-20 tokens that do not return a value.
+     *            See here: https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca
+     */
+    function doTransferIn(
+        address tokenAddress,
+        address from,
+        uint256 amount
+    ) internal returns (uint256) {
+        INonStandardERC20 token = INonStandardERC20(tokenAddress);
+        uint256 balanceBefore = IERC20(tokenAddress).balanceOf(address(this));
+        token.transferFrom(from, address(this), amount);
+
+        bool success;
+        assembly {
+            switch returndatasize()
+                case 0 {
+                    // This is a non-standard ERC-20
+                    success := not(0) // set success to true
+                }
+                case 32 {
+                    // This is a compliant ERC-20
+                    returndatacopy(0, 0, 32)
+                    success := mload(0) // Set `success = returndata` of external call
+                }
+                default {
+                    // This is an excessively non-compliant ERC-20, revert.
+                    revert(0, 0)
+                }
+        }
+        require(success, "TOKEN_TRANSFER_IN_FAILED");
+
+        // Calculate the amount that was *actually* transferred
+        uint256 balanceAfter = IERC20(tokenAddress).balanceOf(address(this));
+        require(balanceAfter >= balanceBefore, "TOKEN_TRANSFER_IN_OVERFLOW");
+        return balanceAfter - balanceBefore; // underflow already checked above, just subtract
+    }
+
+    /**
+     * @dev Similar to EIP20 transfer, except it handles a False success from `transfer` and returns an explanatory
+     *      error code rather than reverting. If caller has not called checked protocol's balance, this may revert due to
+     *      insufficient cash held in this contract. If caller has checked protocol's balance prior to this call, and verified
+     *      it is >= amount, this should not revert in normal conditions.
+     *
+     *      Note: This wrapper safely handles non-standard ERC-20 tokens that do not return a value.
+     *            See here: https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca
+     */
+    function doTransferOut(
+        address tokenAddress,
+        address to,
+        uint256 amount
+    ) internal {
+        INonStandardERC20 token = INonStandardERC20(tokenAddress);
+        token.transfer(to, amount);
+
+        bool success;
+        assembly {
+            switch returndatasize()
+                case 0 {
+                    // This is a non-standard ERC-20
+                    success := not(0) // set success to true
+                }
+                case 32 {
+                    // This is a complaint ERC-20
+                    returndatacopy(0, 0, 32)
+                    success := mload(0) // Set `success = returndata` of external call
+                }
+                default {
+                    // This is an excessively non-compliant ERC-20, revert.
+                    revert(0, 0)
+                }
+        }
+        require(success, "TOKEN_TRANSFER_OUT_FAILED");
     }
 }
