@@ -18,7 +18,7 @@ const Navbar = (props) => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark shadow mb-5"  style={{ backgroundColor: "#000 !important"  }}>
       <a href="/">
-        <img src="../otl-cashbox-logo.png" style={{ maxWidth: "200px", marginRight: "0.8em" }} className="img-fluid"></img>
+        <img src="otl-cashbox-logo.png" style={{ maxWidth: "200px", marginRight: "0.8em" }} className="img-fluid"></img>
       </a>
       <ul className="navbar-nav ml-auto">
         <li className="nav-item text-white ml-auto">
