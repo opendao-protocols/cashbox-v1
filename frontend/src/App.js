@@ -3,8 +3,9 @@ import Web3 from "web3";
 import Navbar from "./Navbar";
 // const EthereumTx = require("ethereumjs-tx").Transaction;
 import Body from "./Body";
-import ContractDetails from "./contractsDetails/ContractDetails.json";
 import MainContractDetails from "./contractsDetails/MainContractDetails.json";
+import BSCContractDetails from "./contractsDetails/BSCContractDetails.json";
+import ContractDetails from "./contractsDetails/ContractDetails.json";
 import ContractDeployment from "./ContractDeployment";
 import Admin from "./Admin";
 // import { BigInt } from "BigInt";
@@ -104,10 +105,10 @@ const App = () => {
     const web3 = window.web3;
 
     let url = window.location.href;
-    console.log(url);
+    // console.log(url);
 
     const accounts = await web3.eth.getAccounts();
-    console.log(accounts.length);
+    // console.log(accounts.length);
 
     if (accounts.length == 0) {
       return;
@@ -116,61 +117,60 @@ const App = () => {
     setAccount(accounts[0]);
     const networkId = await web3.eth.net.getId();
 
-    if (networkId === 1) {
+    if (networkId === 56) {
       const contract = new web3.eth.Contract(
-        MainContractDetails.stockLiquidatorABI
+        BSCContractDetails.stockLiquidatorABI
       );
       setContract(contract);
 
-      setNetwork("Main Net");
-      setNetworkEtherscanURL("https://etherscan.io/address/");
-      console.log(getNetwork);
+      setNetwork("BSC");
+      setNetworkEtherscanURL("https://bscscan.com");
+      // console.log(getNetwork);
+      // console.log(getNetworkEtherscanURL);
 
       const Stock = new web3.eth.Contract(
-        MainContractDetails.stockLiquidatorABI,
-        MainContractDetails.MainstockLiquidatorAddress
+        BSCContractDetails.stockLiquidatorABI,
+        BSCContractDetails.stockLiquidatorAddress
       );
+
       const allowances = await Stock.methods
-        .allowance(accounts[0], MainContractDetails.MainstockLiquidatorAddress)
+        .allowance(accounts[0], BSCContractDetails.stockLiquidatorAddress)
         .call()
         .then((result) => {
-          console.log(result + " stock liqui allowances");
+          // console.log("cash result " + result);
           setstockliquidatorallowance(result);
         });
 
       const cashtoken = new web3.eth.Contract(
-        MainContractDetails.ERC20ABI,
-        MainContractDetails.MaincashAddress
+        BSCContractDetails.cashAddressABI,
+        BSCContractDetails.cashAddress
       );
+      // console.log(cashtoken.methods);
       const cashallowances = await cashtoken.methods
-        .allowance(accounts[0], MainContractDetails.MainstockLiquidatorAddress)
+        .allowance(accounts[0], BSCContractDetails.stockLiquidatorAddress)
         .call()
         .then((result) => {
+          // console.log("cash result " + result);
           setstockliquidatorCashallowance(result);
         });
-
       setcashsc(cashtoken);
       const stocktoken = new web3.eth.Contract(
-        MainContractDetails.ERC20ABI,
-        MainContractDetails.MainstockTokenAddress
+        BSCContractDetails.stockTokenAddressABI,
+        BSCContractDetails.stockTokenAddress
       );
       const stockallowances = await stocktoken.methods
-        .allowance(accounts[0], MainContractDetails.MainstockLiquidatorAddress)
+        .allowance(accounts[0], BSCContractDetails.stockLiquidatorAddress)
         .call()
         .then((result) => {
+          // console.log("stock result " + result);
           setstockliquidatorStockallowance(result);
         });
-      setstocktokensc(stocktoken);
-      // const stockpooltoken = new web3.eth.Contract(
-      //   ContractDetails.ERC20ABI,
-      //   ContractDetails.stockPoolTokenAddress
-      // );
-      // setstockpooltokensc(stockpooltoken);
-      setstocksc(Stock);
 
-      setStockliqidatoraddress(MainContractDetails.MainstockLiquidatorAddress);
-      setAssetTokenaddress(MainContractDetails.MainstockTokenAddress);
-      setTokenAdress(MainContractDetails.MaincashAddress);
+      setstocktokensc(stocktoken);
+      setstocksc(Stock);
+      setStockliqidatoraddress(BSCContractDetails.stockLiquidatorAddress);
+      setAssetTokenaddress(BSCContractDetails.stockTokenAddress);
+      setTokenAdress(BSCContractDetails.cashAddress);
 
       ///// have to add name ticker
       let cashsymbol = await cashtoken.methods.symbol().call();
@@ -262,171 +262,7 @@ const App = () => {
         valueWei = parseInt(valueWei) / d;
       }
       valueWei = valueWei.toString();
-      console.log(valueWei);
-      setdecimalexactvalue(valueWei);
-      // console.log(geturl);
-      // console.log(poolTokenTotalSupply);
-      // console.log(contractStockTokenBalance);
-      // console.log(contractCashBalance);
-      // // console.log(stockTokenRate);
-      // console.log(StockTokenAddress);
-      // console.log(StockPoolTokenAddress);
-
-      // const a = await fetch("https://oracleprov.herokuapp.com/get")
-      //   .then((response) => response.json())
-      //   .then((data) => console.log(data));
-
-      setLoading(false);
-    } else if (networkId === 42) {
-      const contract = new web3.eth.Contract(
-        ContractDetails.stockLiquidatorABI
-      );
-      setContract(contract);
-
-      setNetwork("Kovan");
-      setNetworkEtherscanURL("https://kovan.etherscan.io/address/");
-      console.log(getNetwork);
-      console.log(getNetworkEtherscanURL);
-
-      const Stock = new web3.eth.Contract(
-        ContractDetails.stockLiquidatorABI,
-        ContractDetails.stockLiquidatorAddress
-      );
-
-      const allowances = await Stock.methods
-        .allowance(accounts[0], ContractDetails.stockLiquidatorAddress)
-        .call()
-        .then((result) => {
-          console.log("cash result " + result);
-          setstockliquidatorallowance(result);
-        });
-
-      const cashtoken = new web3.eth.Contract(
-        ContractDetails.ERC20ABI,
-        ContractDetails.cashAddress
-      );
-      const cashallowances = await cashtoken.methods
-        .allowance(accounts[0], ContractDetails.stockLiquidatorAddress)
-        .call()
-        .then((result) => {
-          console.log("cash result " + result);
-          setstockliquidatorCashallowance(result);
-        });
-      setcashsc(cashtoken);
-      const stocktoken = new web3.eth.Contract(
-        ContractDetails.ERC20ABI,
-        ContractDetails.stockTokenAddress
-      );
-      const stockallowances = await stocktoken.methods
-        .allowance(accounts[0], ContractDetails.stockLiquidatorAddress)
-        .call()
-        .then((result) => {
-          console.log("stock result " + result);
-          setstockliquidatorStockallowance(result);
-        });
-
-      setstocktokensc(stocktoken);
-      // const stockpooltoken = new web3.eth.Contract(
-      //   ContractDetails.ERC20ABI,
-      //   ContractDetails.stockPoolTokenAddress
-      // );
-      // setstockpooltokensc(stockpooltoken);
-      setstocksc(Stock);
-      setStockliqidatoraddress(ContractDetails.stockLiquidatorAddress);
-      setAssetTokenaddress(ContractDetails.stockTokenAddress);
-      setTokenAdress(ContractDetails.cashAddress);
-
-      ///// have to add name ticker
-      let cashsymbol = await cashtoken.methods.symbol().call();
-      setCashSymbol(cashsymbol);
-      let cashDecimals = await Stock.methods.cashDecimals().call();
-      let stockDecimals = await stocktoken.methods.decimals().call();
-      setCashDecimals(cashDecimals);
-      setStockDecimals(stockDecimals);
-
-      const cashbalance = await cashtoken.methods.balanceOf(accounts[0]).call();
-      let cashbalanceupdate = await (cashbalance / 10 ** cashDecimals);
-
-      setmycashbalance(cashbalanceupdate);
-      const pooltokenbalance = await Stock.methods
-        .balanceOf(accounts[0])
-        .call();
-      let pooltokenbalanceupdate = await web3.utils.fromWei(pooltokenbalance);
-
-      setmypoolbalance(pooltokenbalanceupdate);
-
-      const stockbalance = await stocktoken.methods
-        .balanceOf(accounts[0])
-        .call();
-      let stockbalanceupdate = await (stockbalance / 10 ** stockDecimals);
-      setmystockbalance(stockbalanceupdate);
-
-      let cashvalauationcap = await Stock.methods.cashValauationCap().call();
-      let updatedonecashcap = await (cashvalauationcap / 10 ** cashDecimals);
-      setdcashValauationCap(updatedonecashcap);
-
-      let geturl = await Stock.methods.url().call();
-      seturll(geturl);
-      // await setdata({
-      //   url: geturl.toString(),
-      //   cashcap: cashvalauationcap,
-      // });
-
-      const poolTokenTotalSupply = await Stock.methods
-        .totalSupply()
-        .call()
-        .then(function (result) {
-          let updatedone = web3.utils.fromWei(result);
-          setpooltokenTotalSupply(updatedone);
-        });
-      const contractStockTokenBalance = await Stock.methods
-        .contractStockTokenBalance()
-        .call()
-        .then(function (result) {
-          let updatedone = result / 10 ** stockDecimals;
-          setcontractstockTokenBalance(updatedone);
-        });
-      const contractCashBalance = await Stock.methods
-        .contractCashBalance()
-        .call()
-        .then(function (result) {
-          let updatedone = result / 10 ** cashDecimals;
-          setcontractCashBalance(updatedone);
-        });
-      const contractCashValuation = await Stock.methods
-        .contractCashValuation()
-        .call()
-        .then(function (result) {
-          let updatedone = result / 10 ** cashDecimals;
-          setcontractCashValuation(updatedone);
-        });
-
-      const pooltocashupdate = Stock.methods
-        .poolToCashRate()
-        .call()
-        .then(function (result) {
-          setpooltocash(result);
-        });
-
-      const stocktocashupdate = Stock.methods
-        .stockToCashRate()
-        .call()
-        .then(async function (result) {
-          let updatedone = result / 10 ** cashDecimals;
-          setstocktocash(updatedone);
-        });
-      var a = "5000";
-      let valueWei = window.web3.utils.toWei(a).toString();
-
-      var b = parseInt(cashDecimals);
-      let c, d;
-      if (b < 18) {
-        d = 18 - b;
-        d = 10 ** d;
-        valueWei = parseInt(valueWei) / d;
-      }
-      valueWei = valueWei.toString();
-      console.log(valueWei);
+      // console.log(valueWei);
       setdecimalexactvalue(valueWei);
 
       // console.log(geturl);
@@ -443,52 +279,9 @@ const App = () => {
 
       setLoading(false);
     } else {
-      window.alert("the contract not deployed to detected network.");
+      window.alert("The Contract not deployed to detected network. Please swith to Smart Chain (BSC)");
       setloading2(true);
     }
-  };
-
-  const onsubmitdetails = async (
-    cashaddress,
-    stockTokenAddress,
-    UppercapLimit,
-    tokenname,
-    tokensymbol,
-    URl
-  ) => {
-    const web3 = window.web3;
-    let bytecode = MainContractDetails.stockLiquidatorBytecode;
-
-    const uppercapinwei = UppercapLimit * 10 ** cashDecimals;
-    let payload = {
-      data: bytecode,
-      arguments: [
-        cashaddress,
-        stockTokenAddress,
-        uppercapinwei,
-        tokenname,
-        tokensymbol,
-        URl,
-      ],
-    };
-
-    let parameter = {
-      from: account,
-      gas: web3.utils.toHex(800000),
-      gasPrice: web3.utils.toHex(web3.utils.toWei("30", "gwei")),
-    };
-    await contract
-      .deploy(payload)
-      .send(parameter, (err, transactionHash) => {
-        console.log("Transaction Hash :", transactionHash);
-      })
-      .on("confirmation", () => {})
-      .then((newContractInstance) => {
-        console.log(
-          "Deployed Contract Address : ",
-          newContractInstance.options.address
-        );
-      });
   };
 
   const InfiniteApprovalCash = async () => {
@@ -503,7 +296,7 @@ const App = () => {
       valueWei = parseInt(valueWei) / d;
     }
 
-    console.log(valueWei, b, c, d);
+    // console.log(valueWei, b, c, d);
     valueWei = valueWei.toString();
     await cashsc.methods
       .approve(Stockliqidatoraddress, valueWei)
@@ -528,7 +321,7 @@ const App = () => {
       valueWei = parseInt(valueWei) / d;
     }
 
-    console.log(valueWei, b, c, d);
+    // console.log(valueWei, b, c, d);
     valueWei = valueWei.toString();
     await stocktokensc.methods
       .approve(Stockliqidatoraddress, valueWei)
@@ -541,30 +334,6 @@ const App = () => {
       });
   };
 
-  const InfiniteApprovalStockLiquidator = async () => {
-    var a = "1000000";
-    let valueWei = window.web3.utils.toWei(a).toString();
-
-    var b = parseInt(cashDecimals);
-    let c, d;
-    if (b < 18) {
-      d = 18 - b;
-      d = 10 ** d;
-      valueWei = parseInt(valueWei) / d;
-    }
-
-    console.log(valueWei, b, c, d);
-    valueWei = valueWei.toString();
-    await stocksc.methods
-      .approve(ContractDetails.stockLiquidatorAddress, valueWei)
-      .send({ from: account })
-      .once("receipt", async (receipt) => {
-        setrefresh(1);
-      })
-      .on("error", (error) => {
-        setrefresh(1);
-      });
-  };
 
   const redeemStockToken = async (a) => {
     let valueWei = window.web3.utils.toWei(a).toString();
@@ -577,7 +346,7 @@ const App = () => {
       valueWei = parseInt(valueWei) / d;
     }
 
-    console.log(valueWei, b, c, d);
+    // console.log(valueWei, b, c, d);
     valueWei = valueWei.toString();
     if (parseInt(stockliquidatorStockallowance) >= parseInt(valueWei)) {
     } else {
@@ -615,7 +384,7 @@ const App = () => {
       valueWei = parseInt(valueWei) / d;
     }
 
-    console.log(valueWei, b, c, d);
+    // console.log(valueWei, b, c, d);
     valueWei = valueWei.toString();
     if (parseInt(stockliquidatorCashallowance) >= parseInt(valueWei)) {
     } else {
@@ -652,10 +421,10 @@ const App = () => {
       valueWei = parseInt(valueWei) / 100;
     }
 
-    console.log(valueWei, b, c, d);
+    // console.log(valueWei, b, c, d);
     valueWei = valueWei.toString();
-    console.log(a);
-    console.log(Stockliqidatoraddress);
+    // console.log(a);
+    // console.log(Stockliqidatoraddress);
     if (parseInt(stockliquidatorallowance) >= parseInt(valueWei)) {
     } else {
       await stocksc.methods
@@ -690,7 +459,7 @@ const App = () => {
       valueWei = parseInt(valueWei) / 100;
     }
 
-    console.log(valueWei, b, c, d);
+    // console.log(valueWei, b, c, d);
     valueWei = valueWei.toString();
     await stocksc.methods
       .updateCashValuationCap(valueWei)
@@ -758,15 +527,6 @@ const App = () => {
         <Router>
           <Switch>
             <Route
-              exact
-              path="/deploy"
-              render={() => (
-                <Fragment>
-                  <ContractDeployment onsubmitdetails={onsubmitdetails} />
-                </Fragment>
-              )}
-            />
-            <Route
               path="/admin"
               render={() => (
                 <Fragment>
@@ -824,9 +584,6 @@ const App = () => {
                     }
                     InfiniteApprovalStock={InfiniteApprovalStock}
                     stockliquidatorallowance={stockliquidatorallowance}
-                    InfiniteApprovalStockLiquidator={
-                      InfiniteApprovalStockLiquidator
-                    }
                     decimalexactvalue={decimalexactvalue}
                     Stockliqidatoraddress={Stockliqidatoraddress}
                     AssetTokenaddress={AssetTokenaddress}
@@ -867,9 +624,6 @@ const App = () => {
                     }
                     InfiniteApprovalStock={InfiniteApprovalStock}
                     stockliquidatorallowance={stockliquidatorallowance}
-                    InfiniteApprovalStockLiquidator={
-                      InfiniteApprovalStockLiquidator
-                    }
                     decimalexactvalue={decimalexactvalue}
                     Stockliqidatoraddress={Stockliqidatoraddress}
                     Stockliqidatoraddress={Stockliqidatoraddress}
@@ -908,15 +662,6 @@ const App = () => {
         <div>
           <Router>
             <Switch>
-              <Route
-                exact
-                path="/deploy"
-                render={() => (
-                  <Fragment>
-                    <ContractDeployment onsubmitdetails={onsubmitdetails} />
-                  </Fragment>
-                )}
-              />
               <Route
                 path="/admin"
                 render={() => (
@@ -981,9 +726,6 @@ const App = () => {
                       }
                       InfiniteApprovalStock={InfiniteApprovalStock}
                       stockliquidatorallowance={stockliquidatorallowance}
-                      InfiniteApprovalStockLiquidator={
-                        InfiniteApprovalStockLiquidator
-                      }
                       decimalexactvalue={decimalexactvalue}
                       Stockliqidatoraddress={Stockliqidatoraddress}
                       AssetTokenaddress={AssetTokenaddress}
@@ -1026,9 +768,6 @@ const App = () => {
                       }
                       InfiniteApprovalStock={InfiniteApprovalStock}
                       stockliquidatorallowance={stockliquidatorallowance}
-                      InfiniteApprovalStockLiquidator={
-                        InfiniteApprovalStockLiquidator
-                      }
                       decimalexactvalue={decimalexactvalue}
                       Stockliqidatoraddress={Stockliqidatoraddress}
                       AssetTokenaddress={AssetTokenaddress}

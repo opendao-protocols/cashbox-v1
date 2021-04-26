@@ -7,6 +7,7 @@ import Cookies from "universal-cookie";
 import Switch from "@material-ui/core/Switch";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import {IconButton} from "@material-ui/core";
 
 const Body = ({
   redeemStockToken,
@@ -92,6 +93,22 @@ const Body = ({
   };
 
   const onchangestockvalue = (e) => {
+    let { value, min, max } = e.target;
+    // value = Math.max(Number(min), Math.min(Number(max), Number(value)));
+    console.log(Number(value),Number(min), value, min, max);
+    if(isNaN(parseInt(value))){
+      swal("Please enter validate amount");
+      return;
+    }
+    if(Number(min) > Number(value)){
+      swal("you can enter the amount from "+min+" to "+max+".");
+      return;
+    }
+    if(Number(max) < Number(value)){
+      swal("you can enter the amount from "+min+" to "+max+".");
+      return;
+    }
+    console.log(value, min, max);
     setsellstockvalue(e.target.value);
   };
 
@@ -198,7 +215,7 @@ const Body = ({
           CashSymbol.toString() +
           " for " +
           sellstockvalue.toString() +
-          " Asset Token"
+          " bOPEN Token"
       );
     }
     console.log(sellstockvalue.toString());
@@ -264,167 +281,34 @@ const Body = ({
   return (
     <div className="container">
       <div className="row">
-        <div className="col-md-8 offset-md-2 text-center">
+        <div className="col-md-12 text-center">
           <div>
             <div className="row">
-              <div className="col-md-12">
-                <h3>The AREIT CashBox Asset Explorer</h3>
-                <br></br>
-                <p>
-                  Deploy to this CashBox to become an on-chain LP counterparty
-                  to the Australian Real Estate Investment Trust - A REIT which
-                  owns and manages Australian Commercial Real Estate. <br></br>{" "}
-                  LPs earn fees and can{" "}
-                  <a
-                    href="https://stake.opendao.io/"
-                    target="_blank"
-                    className="link"
-                  >
-                    stake
-                  </a>{" "}
-                  to earn OPEN tokens. Not sure how CashBoxes work? Click{" "}
-                  <a href="#" className="link" onClick={showModal}>
-                    here
-                  </a>
-                  .
-                </p>
-              </div>
-            </div>
-            <div className="row mt-md-3">
-              <div className="col-md-6">
-                <input
-                  id="inputvalue"
-                  type="text"
-                  name="sellmintvalue"
-                  value={sellmintvalue}
-                  onChange={onchangemintvalue}
-                  className="form-control"
-                  required
-                />
-              </div>
-              <div className="col-md-6">
-                <button
-                  className="btn btn-main btn-block"
-                  onClick={onsubmitminttoken}
-                >
-                  Deposit {CashSymbol} and get CashBox tokens
-                </button>
-              </div>
-            </div>
-            <br></br>
-
-            <div className="row">
-              <div className="col-md-6">
-                <input
-                  id="inputvalue"
-                  type="text"
-                  name="sellredeemvalue"
-                  value={sellredeemvalue}
-                  onChange={onchangeredeemvalue}
-                  className="form-control"
-                  required
-                />
-              </div>{" "}
-              <div className="col-md-6">
-                <button
-                  className="btn btn-main btn-block"
-                  onClick={onsubmitredeemtoken}
-                >
-                  Redeem CashBox tokens for Asset tokens
-                </button>
-              </div>
-            </div>
-            <br></br>
-
-            <div className="row">
-              <div className="col-md-6">
+              <div className="col-md-6 my-auto">
                 <input
                   id="inputvalue"
                   type="text"
                   name="sellstockvalue"
                   value={sellstockvalue}
                   onChange={onchangestockvalue}
-                  className="form-control"
+                  className="form-control input-main"
+                  placeholder="0"
+                  min="1"
+                  max={contractCashBalance}
                   required
                 />
               </div>
-              <div className="col-md-6">
+              <div className="col-md-6 ">
                 <button
                   className="btn btn-main btn-block"
                   onClick={onsubmitsellstock}
                 >
-                  Sell Asset tokens to get {CashSymbol}
+                  Convert bOPEN to {CashSymbol}
                 </button>
               </div>
             </div>
             <br></br>
             <br></br>
-            <div style={{ backgroundColor: "#ffffff", borderRadius: "6px" }}>
-              <span style={{ color: "black" }}>Cash Infinite Allowance</span>
-              {parseInt(stockliquidatorCashallowance) <=
-              parseInt(decimalexactvalue) ? (
-                // parseInt(sellredeemvalue) +
-                //   parseInt(sellmintvalue) +
-                //   parseInt(sellstockvalue)
-
-                <Switch
-                  // checked={checkedA}
-                  onChange={CashInfiniteAllowancehandleChange}
-                  name="checkedA"
-                  inputProps={{ "aria-label": "secondary checkbox" }}
-                />
-              ) : (
-                <Switch
-                  disabled
-                  checked
-                  inputProps={{ "aria-label": "primary checkbox" }}
-                />
-              )}
-
-              <span style={{ color: "black" }}>Asset Infinite Allowance</span>
-              {parseInt(stockliquidatorStockallowance) <=
-              parseInt(decimalexactvalue) ? (
-                // parseInt(sellredeemvalue) +
-                //   parseInt(sellmintvalue) +
-                //   parseInt(sellstockvalue)
-
-                <Switch
-                  // checked={checkedA}
-                  onChange={StockInfiniteAllowancehandleChange}
-                  name="checkedA"
-                  inputProps={{ "aria-label": "secondary checkbox" }}
-                />
-              ) : (
-                <Switch
-                  disabled
-                  checked
-                  inputProps={{ "aria-label": "primary checkbox" }}
-                />
-              )}
-
-              {/* <span style={{ color: "black" }}>
-                Stock liquidator Infinite Allowance
-              </span>
-              {parseInt(stockliquidatorallowance) <=
-              parseInt(decimalexactvalue) ? (
-                // parseInt(sellredeemvalue) +
-                //   parseInt(sellmintvalue) +
-                //   parseInt(sellstockvalue)
-
-                <Switch
-                  // checked={checkedA}
-                  onChange={stockliquidatorInfiniteAllowancehandleChange}
-                  name="checkedA"
-                  inputProps={{ "aria-label": "secondary checkbox" }}
-                />
-              ) : (
-                <Switch
-                  disabled
-                  checked
-                  inputProps={{ "aria-label": "primary checkbox" }}
-                />
-              )} */}
-            </div>
           </div>
         </div>
       </div>
@@ -434,141 +318,24 @@ const Body = ({
       <div className="row">
         <div className="col-md-12">
           <div className="row">
-            <div className="col-md-6">
+            <div className="col-md-10 offset-md-1">
               <div className="row" style={{ height: "100%" }}>
                 <div className="col-md-10 offset-md-1 section">
                   <h3 className="section-heading">STATISTICS</h3>
                   <table className="table text-left width-lg">
                     <tbody>
                       <tr>
-                        <td>CashBox Description:</td>
-                        <td className="text-break">
-                          Perpetual Counterparty to Australian Real Estate
-                          Investment Trust Shares
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>{CashSymbol} in Cashbox:</td>
+                        <td>{CashSymbol} available to convert</td>
                         <td>{contractCashBalance}</td>
                       </tr>
                       <tr>
-                        <td>Asset tokens in CashBox:</td>
-                        <td>{contractstockTokenBalance}</td>
-                      </tr>
-                      <tr>
-                        <td>Total CashBox tokens in circulation:</td>
-                        <td>{pooltokenTotalSupply}</td>
-                      </tr>
-                      <tr>
-                        <td>Asset token price in {CashSymbol}:</td>
-                        <td>{stocktocash}</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          {" "}
-                          {sellredeemvalue} {""}CashBox token gives:
-                        </td>
-                        <td className="text-break">
-                          {/* {Number(
-                            contractCashValuation / pooltokenTotalSupply
-                          ).toFixed(2)} */}
-                          {sellredeemvalue === ""
-                            ? "You will receive _____ Asset Token"
-                            : parseFloat(sellredeemvalue) >
-                              parseFloat(contractstockTokenBalance) *
-                                parseFloat(stocktocash)
-                            ? "You will receive " +
-                              contractstockTokenBalance +
-                              " " +
-                              "Asset Token" +
-                              " and " +
-                              YYY.toString() +
-                              " " +
-                              CashSymbol.toString()
-                            : "You will receive " +
-                              YYY1.toString() +
-                              " " +
-                              CashSymbol.toString()}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>CashBox market cap ceiling:</td>
-                        <td>{dcashValauationCap}</td>
-                      </tr>
-                      <tr>
-                        <td>CashBox current market cap:</td>
-                        <td>
-                          {Number(
-                            pooltokenTotalSupply *
-                              (contractCashValuation / pooltokenTotalSupply)
-                          ).toFixed(2)}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Asset Explorer:</td>
-                        <td>
-                          <span>
-                            <a href={urlll} target="_blank" className="link">
-                              {urlll}
-                            </a>
-                          </span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-md-6">
-              <div className="row">
-                <div className="col-md-10 offset-md-1 section">
-                  <h3 className="section-heading">YOUR BALANCES</h3>
-                  <table className="table text-left width-lg">
-                    <tbody>
-                      <tr>
-                        <td>Asset token in your wallet:</td>
+                        <td>bOPEN in your wallet</td>
                         <td>{mystockbalance}</td>
                       </tr>
-                      <tr>
-                        <td>CashBox token in your wallet:</td>
-                        <td>{mypoolbalance}</td>
-                      </tr>
-                      <tr>
-                        <td>{CashSymbol} in your wallet:</td>
-                        <td>{mycashbalance}</td>
-                      </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
-
-              <br></br>
-              <br></br>
-              <br></br>
-
-              <div className="row">
-                <div className="col-md-10 offset-md-1 section">
-                  <h3 className="section-heading">CONTRACT ADDRESSES</h3>
-                  <table className="table text-left">
-                    <tbody>
-                      <tr>
-                        <td>{CashSymbol} Address:</td>
-                        <td><a href={getNetworkEtherscanURL + TokenAddress}  className="link" target="_blank"> {TokenAddress}</a></td>
-                      </tr>
-                      <tr>
-                        <td className="text-break">Pool Token Address: </td>
-                        <td><a href={getNetworkEtherscanURL + Stockliqidatoraddress} className="link" target="_blank"> {Stockliqidatoraddress}</a></td>
-                      </tr>
-                      <tr>
-                        <td className="text-break">Asset Token Address:</td>
-                        <td><a href={getNetworkEtherscanURL + AssetTokenaddress} className="link" target="_blank">{AssetTokenaddress}</a></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              
             </div>
           </div>
         </div>
@@ -747,6 +514,41 @@ const Body = ({
             </div>
           </div>
         </div>
+      </div>
+      <div className="row footer " style={{paddingTop:"2em"}}>
+      <div className="col-md-12 text-center">
+      <h3 className="section-heading text-center">Request the OPEN DAO team to add more pOPEN
+        <IconButton
+          style={{ marginRight: `8px`,marginLeft: `16px` }}
+          target="_blank"
+          href="https://discord.com/invite/SpFwJRr"
+          size="medium"
+        >
+          <img
+            src="/images/discord.png"
+            className="social-media-icons text-center"
+          />
+        </IconButton>
+        <IconButton
+          style={{ marginRight: `8px` }}
+          target="_blank"
+          href="https://t.me/opendao" size="medium">
+          <img
+            src="/images/telegram.png"
+            className="social-media-icons"
+          />
+        </IconButton>
+        <IconButton
+          style={{ marginRight: `8px` }}
+          target="_blank"
+          href={"mailto: info@opendao.io" } size="medium">
+          <img
+            src="/images/mail.png"
+            className="social-media-icons"
+          />
+        </IconButton>
+        </h3>
+      </div>
       </div>
     </div>
   );
