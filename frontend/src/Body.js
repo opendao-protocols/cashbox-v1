@@ -332,6 +332,10 @@ const Body = ({
                         <td>bOPEN in your wallet</td>
                         <td>{mystockbalance}</td>
                       </tr>
+                      <tr>
+                        <td>pOPEN in your wallet</td>
+                        <td>{mycashbalance}</td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
