@@ -537,20 +537,20 @@ const Body = ({
           style={{ marginRight: `8px` }}
           target="_blank"
           href="https://t.me/opendao" size="medium">
-          <img
-            src="/images/telegram.png"
-            className="social-media-icons"
-          />
+          <img src="/images/telegram.png" className="social-media-icons"/>
         </IconButton>
         <IconButton
           style={{ marginRight: `8px` }}
           target="_blank"
           href={"mailto: info@opendao.io" } size="medium">
-          <img
-            src="/images/mail.png"
-            className="social-media-icons"
-          />
-        </IconButton>
+          <img src="/images/mail.png" className="social-media-icons"/>
+          </IconButton>
+          <IconButton
+          style={{ marginRight: `8px` }}
+          target="_blank"
+          href="https://medium.com/opendao/open-bsc-token-migration-82d340e96469" size="medium">
+          <img src="/images/medium.png" className="social-media-icons"/>
+          </IconButton>
         </h3>
       </div>
       </div>
