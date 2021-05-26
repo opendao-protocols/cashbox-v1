@@ -181,9 +181,9 @@ const App = () => {
       setStockDecimals(stockDecimals);
 
       const cashbalance = await cashtoken.methods.balanceOf(accounts[0]).call();
-      let cashbalanceupdate = await (cashbalance / 10 ** cashDecimals);
+      let cashbalanceupdate = await (cashbalance / 10 ** cashDecimals).toFixed(18);
 
-      setmycashbalance(cashbalanceupdate);
+      setmycashbalance(cashbalanceupdate.toString().match(/^-?\d+(?:\.\d{0,3})?/)[0]);
       const pooltokenbalance = await Stock.methods
         .balanceOf(accounts[0])
         .call();
@@ -194,8 +194,8 @@ const App = () => {
       const stockbalance = await stocktoken.methods
         .balanceOf(accounts[0])
         .call();
-      let stockbalanceupdate = await (stockbalance / 10 ** stockDecimals);
-      setmystockbalance(stockbalanceupdate);
+      let stockbalanceupdate = await (stockbalance / 10 ** stockDecimals).toFixed(18);
+      setmystockbalance(stockbalanceupdate.toString().match(/^-?\d+(?:\.\d{0,3})?/)[0]);
 
       let cashvalauationcap = await Stock.methods.cashValauationCap().call();
       let updatedonecashcap = await (cashvalauationcap / 10 ** cashDecimals);
@@ -226,8 +226,8 @@ const App = () => {
         .contractCashBalance()
         .call()
         .then(function (result) {
-          let updatedone = result / 10 ** cashDecimals;
-          setcontractCashBalance(updatedone);
+          let updatedone = (result / 10 ** cashDecimals).toFixed(18);
+          setcontractCashBalance(updatedone.toString().match(/^-?\d+(?:\.\d{0,3})?/)[0]);
         });
       const contractCashValuation = await Stock.methods
         .contractCashValuation()
