@@ -380,10 +380,7 @@ const Body = ({
                         className="carousel-item active onboarding"
                         style={{ padding: "2rem", paddingTop: "1rem" }}
                       >
-                        <img
-                          className="d-block intro-slideshow-img mx-auto"
-                          src="images/onboarding/1.PNG"
-                          alt="First slide"
+                        <img className="d-block intro-slideshow-img mx-auto" src="images/onboarding/1.PNG" alt="First slide"
                           style={{ maxWidth: "260px" }}
                         />
                         <br></br>
@@ -392,9 +389,8 @@ const Body = ({
                         </h3>
                       </div>
                       <div className="carousel-item">
-                        <img
-                          className="d-block intro-slideshow-img mx-auto"
-                          src="images/onboarding/2.PNG"
+                        <img className="d-block intro-slideshow-img mx-auto"
+                          src='images/onboarding/2.PNG'
                           alt="Second slide"
                         />
                         <h3 className="intro-slideshow-text">
@@ -443,8 +439,8 @@ const Body = ({
                       <div className="carousel-item">
                         <br></br>
                         <img
-                          className="d-block intro-slideshow-img mx-auto"
-                          src="images/onboarding/6.PNG"
+                          className='d-block intro-slideshow-img mx-auto'
+                          src='images/onboarding/6.PNG'
                           alt="Sixth slide"
                         />
                         <h3 className="intro-slideshow-text">
@@ -519,9 +515,26 @@ const Body = ({
           </div>
         </div>
       </div>
-      <div className="row footer " style={{paddingTop:"2em"}}>
+      <div className="row footer " style={{paddingTop:"4em"}}>
       <div className="col-md-12 text-center">
-      <h3 className="section-heading text-center">Request the OPEN DAO team to add more pOPEN
+      <div className="row" >
+        <div className="col-md-3 offset-md-1 text-center">
+
+        <h5>pOPEN Address :</h5> <br/> 
+        <h5>bOPEN Address : </h5>
+        </div>
+        <div className="col-md-7 offset-md-1 text-left">
+        <h5>
+          <a href="https://bscscan.com/address/0xaBaE871B7E3b67aEeC6B46AE9FE1A91660AadAC5" target="_blank">0xaBaE871B7E3b67aEeC6B46AE9FE1A91660AadAC5
+          </a>
+      </h5> <br/> 
+      <h5>
+        <a href="https://bscscan.com/address/0xF35262a9d427F96d2437379eF090db986eaE5d42" target="_blank">0xF35262a9d427F96d2437379eF090db986eaE5d42</a>
+      </h5>
+
+        </div>
+      </div>
+      <h3 style ={{paddingTop:"3em"}}className="section-heading text-center">Request the OPEN DAO team to add more pOPEN
         <IconButton
           style={{ marginRight: `8px`,marginLeft: `16px` }}
           target="_blank"
@@ -529,7 +542,7 @@ const Body = ({
           size="medium"
         >
           <img
-            src="/images/discord.png"
+            src="./images/discord.png"
             className="social-media-icons text-center"
           />
         </IconButton>
@@ -537,19 +550,19 @@ const Body = ({
           style={{ marginRight: `8px` }}
           target="_blank"
           href="https://t.me/opendao" size="medium">
-          <img src="/images/telegram.png" className="social-media-icons"/>
+          <img src="./images/telegram.png" className="social-media-icons"/>
         </IconButton>
         <IconButton
           style={{ marginRight: `8px` }}
           target="_blank"
           href={"mailto: info@opendao.io" } size="medium">
-          <img src="/images/mail.png" className="social-media-icons"/>
+          <img src="./images/mail.png" className="social-media-icons"/>
           </IconButton>
           <IconButton
           style={{ marginRight: `8px` }}
           target="_blank"
           href="https://medium.com/opendao/open-bsc-token-migration-82d340e96469" size="medium">
-          <img src="/images/medium.png" className="social-media-icons"/>
+          <img src="./images/medium.png" className="social-media-icons"/>
           </IconButton>
         </h3>
       </div>
