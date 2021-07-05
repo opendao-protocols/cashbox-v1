@@ -534,7 +534,7 @@ const Body = ({
 
         </div>
       </div>
-      <h3 style ={{paddingTop:"3em"}}className="section-heading text-center">Request the OPEN DAO team to add more pOPEN
+      <h3 style ={{paddingTop:"3em"}}className="section-heading text-center">bOPEN can be converted back to ETH native OPEN via Burgerswap bridge
         <IconButton
           style={{ marginRight: `8px`,marginLeft: `16px` }}
           target="_blank"
